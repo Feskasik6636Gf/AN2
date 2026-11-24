@@ -13,6 +13,7 @@ function head(x,y,o){ // x,y = head centre; o.s scale
  // rim light (right) + bounce (bottom)
  out+=`<path d="M${x+rw*.55},${y-rh*.78} A${rw} ${rh} 0 0 1 ${x+rw*.62},${y+rh*.74}" stroke="${rim}" stroke-width="${4.5*s}" fill="none" opacity=".85" stroke-linecap="round"/>`;
  out+=`<path d="M${x-rw*.5},${y+rh*.84} A${rw} ${rh} 0 0 0 ${x+rw*.3},${y+rh*.96}" stroke="${o.bounce??'#7a5a8a'}" stroke-width="${3*s}" fill="none" opacity=".5"/>`;
+ out+=`<path d="M${x-rw*.62},${y-rh*.7} A${rw} ${rh} 0 0 0 ${x-rw*.7},${y+rh*.6}" stroke="${o.key??'#ffe0b0'}" stroke-width="${2.5*s}" fill="none" opacity=".35"/>`;
  // specular
  out+=`<ellipse cx="${x-rw*.42}" cy="${y-rh*.52}" rx="${rw*.32}" ry="${rh*.18}" fill="url(#${sp})" transform="rotate(-24 ${x-rw*.42} ${y-rh*.52})"/>`;
  // face
@@ -76,7 +77,10 @@ function mitten(x,y,s,rot,col,colL){return `<g transform="translate(${x},${y}) r
 function body(o){ // full character, feet at (X,G)
  const s=o.s??1, X=o.x, G=o.y, c=o.c; let out='';
  const blur=uid('bl');
- out+=`<defs><filter id="${blur}"><feGaussianBlur stdDeviation="${6*s}"/></filter></defs><ellipse cx="${X}" cy="${G+2*s}" rx="${70*s}" ry="${11*s}" fill="#2a1a30" opacity=".35" filter="url(#${blur})"/>`;
+ const cs=o.cast??[1.6,.28]; const b2=uid('b2');
+ out+=`<defs><filter id="${blur}"><feGaussianBlur stdDeviation="${5*s}"/></filter><filter id="${b2}"><feGaussianBlur stdDeviation="${9*s}"/></filter></defs>`;
+ out+=`<g opacity=".32" filter="url(#${b2})"><path d="M${X-40*s},${G} L${X+40*s},${G} L${X+40*s+330*s*cs[1]*cs[0]},${G-14*s+330*s*cs[1]*.25} L${X+330*s*cs[1]*cs[0]-60*s},${G-14*s+330*s*cs[1]*.25}Z" fill="#3a1e2a"/><ellipse cx="${X+330*s*cs[1]*cs[0]-10*s}" cy="${G-16*s+330*s*cs[1]*.25}" rx="${80*s}" ry="${22*s}" fill="#3a1e2a"/></g>`;
+ out+=`<ellipse cx="${X}" cy="${G+2*s}" rx="${62*s}" ry="${9*s}" fill="#1a0e18" opacity=".5" filter="url(#${blur})"/>`;
  // legs
  const hipY=G-120*s, L=o.legs??[0,0];
  for(const [i,sx] of [[0,-1],[1,1]]){
@@ -99,7 +103,12 @@ function body(o){ // full character, feet at (X,G)
    <path d="M${hx-12*s},${hy-8*s} L${hx+12*s},${hy-8*s}" stroke="${c.cuff??c.topS}" stroke-width="${10*s}" stroke-linecap="round"/>
    ${mitten(hx,hy+8*s,s,a[4]??0,o.skinHand??'#231d30','#6a5a80')}`;};
  out+=arm(-1,A[0]);
- out+=`<path d="${T}" fill="url(#${tg})"/><g clip-path="url(#${tc})">${o.outfit?o.outfit(X,sh,hipY,s,c):''}</g><path d="${T}" fill="none" stroke="${OL}" stroke-width="${2.8*s}"/>`;
+ const ao=uid('ao');
+ out+=`<defs><radialGradient id="${ao}" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#1a0e20" stop-opacity=".55"/><stop offset="1" stop-color="#1a0e20" stop-opacity="0"/></radialGradient></defs>`;
+ out+=`<path d="${T}" fill="url(#${tg})"/><g clip-path="url(#${tc})">${o.outfit?o.outfit(X,sh,hipY,s,c):''}
+  <path d="M${X+tw*.35},${sh} C${X+tw*.6},${sh+60*s} ${X+bw*.5},${hipY-30*s} ${X+bw*.55},${hipY+30*s} L${X+bw+20*s},${hipY+30*s} L${X+tw+20*s},${sh-10*s}Z" fill="#3a4a9a" opacity=".22"/>
+  <path d="M${X-tw*.6},${sh+70*s} q${10*s},${20*s} ${4*s},${44*s} M${X+tw*.45},${sh+80*s} q${-8*s},${18*s} ${-2*s},${40*s} M${X-20*s},${hipY-6*s} q${16*s},${-8*s} ${34*s},0" stroke="#1a0e20" stroke-width="${2.2*s}" fill="none" opacity=".35" stroke-linecap="round"/>
+  <ellipse cx="${X+(o.lean??0)*s}" cy="${sh+6*s}" rx="${78*s}" ry="${30*s}" fill="url(#${ao})"/></g><path d="${T}" fill="none" stroke="${OL}" stroke-width="${2.8*s}"/>`;
  out+=`<path d="M${X+tw-4*s},${sh+20*s} L${X+bw-4*s},${hipY+4*s}" stroke="${o.rim??'#ffb27a'}" stroke-width="${4*s}" opacity=".8" stroke-linecap="round"/>`;
  out+=arm(1,A[1]);
  // head sits on collar
