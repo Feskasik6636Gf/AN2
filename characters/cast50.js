@@ -67,7 +67,7 @@ function sheet(list,title,off){
  list.forEach((c,i)=>{const [n,age,fig,shape,hair,hcol,out,p,acc,mood,ex={}]=c;const col=i%COLS,row=Math.floor(i/COLS);
   const x=250+col*475, y=140+row*ROWH+430; const A=ageP(age);
   const sc=.78;
-  const h={mood,shape,hair:hair?H[hair](hcol):null,acc:acc?ACC[acc]:null,lashes:!!ex.lashes,hairBack:ex.afro?HAIR.afro(ex.afro,sh(ex.afro,.35)):null};
+  const y18=age===18;const h={mood,shape:y18&&fig==='boy'?'chin':shape,eyeS:y18?(fig==='girl'?.88:.82):1,blushA:y18?.6:1,hair:hair?H[hair](hcol):null,acc:acc?ACC[acc]:null,lashes:!!ex.lashes,hairBack:ex.afro?HAIR.afro(ex.afro,sh(ex.afro,.35)):null};
   s+=body({x,y,...A,s:A.s*sc,fig,c:p,outfit:OUT[out],baggy:!!ex.baggy,chunky:!!ex.chunky,rim:'#ffd59a',cast:[1.4,.18],h,arms:[[6,0,16,0,0],[6,0,16,0,0]],legs:[-4,4]});
   s+=`<g transform="translate(${x},${y+40})"><rect x="-150" y="-26" width="300" height="62" rx="14" fill="#fff" opacity=".88" stroke="${OL}" stroke-width="2"/>
    <text y="2" text-anchor="middle" font-family="DejaVu Sans" font-weight="bold" font-size="24" fill="${OL}">${off+i+1}. ${n}</text>

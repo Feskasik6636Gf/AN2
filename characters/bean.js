@@ -35,12 +35,12 @@ function head(x,y,o){ // x,y = head centre; o.s scale
  // face
  const m=o.mood??'calm', ex=30*s, ey=y+(-4)*s, lk=(o.look??0)*s;
  // blush
- out+=`<ellipse cx="${x-50*s}" cy="${y+22*s}" rx="${13*s}" ry="${7*s}" fill="#ff7a8a" opacity="${m==='shy'?.75:.42}"/><ellipse cx="${x+50*s}" cy="${y+22*s}" rx="${13*s}" ry="${7*s}" fill="#ff7a8a" opacity="${m==='shy'?.75:.42}"/>`;
+ out+=`<ellipse cx="${x-50*s}" cy="${y+22*s}" rx="${13*s}" ry="${7*s}" fill="#ff7a8a" opacity="${(m==='shy'?.75:.42)*(o.blushA??1)}"/><ellipse cx="${x+50*s}" cy="${y+22*s}" rx="${13*s}" ry="${7*s}" fill="#ff7a8a" opacity="${(m==='shy'?.75:.42)*(o.blushA??1)}"/>`;
  for(const sx of [-1,1]){const cx=x+sx*ex;
   if(m==='love'){out+=`<path transform="translate(${cx},${ey}) scale(${s})" d="M0,20 C-30,0 -22,-24 0,-8 C22,-24 30,0 0,20Z" fill="#ff5f7e" stroke="${OL}" stroke-width="2.6"/><ellipse cx="${cx-8*s}" cy="${ey-8*s}" rx="${5*s}" ry="${3.5*s}" fill="#fff" opacity=".8"/>`;}
   else if(m==='joy'){out+=`<path d="M${cx-15*s},${ey+4*s} Q${cx},${ey-18*s} ${cx+15*s},${ey+4*s}" stroke="#fff" stroke-width="${6*s}" fill="none" stroke-linecap="round"/>`;}
   else{
-   const ry=(m==='shock'?25:22)*s, rx=(m==='shock'?19:17)*s, pr=(m==='shock'?6:8.5)*s;
+   const es=o.eyeS??1; const ry=(m==='shock'?25:22)*s*es, rx=(m==='shock'?19:17)*s*es, pr=(m==='shock'?6:8.5)*s*es;
    const ec=uid('ec');out+=`<defs><clipPath id="${ec}"><ellipse cx="${cx}" cy="${ey}" rx="${rx}" ry="${ry}"/></clipPath></defs><ellipse cx="${cx}" cy="${ey}" rx="${rx}" ry="${ry}" fill="#fbf7f2"/><g clip-path="url(#${ec})">`;
    const py=ey+(m==='sad'?4:1)*s+(m==='smug'?7*s:0);
    out+=`<circle cx="${cx+lk+(m==='angry'?-sx*3*s:0)}" cy="${py}" r="${pr}" fill="${OL}"/><circle cx="${cx+lk-3*s}" cy="${py-4*s}" r="${2.6*s}" fill="#fff"/>`;
@@ -123,13 +123,13 @@ function body(o){ // full character, feet at (X,G)
    ${c.lace?`<path d="M-10,-14 l8,6 M-2,-16 l8,6" stroke="${c.lace}" stroke-width="2.4"/>`:''}</g>`;
  }
  // torso
- const sh=hipY-112*s, tw=F.sh*s, bw=F.hip*s, ww=F.wa*s, wy=sh+(hipY-sh)*.62;
+ const sh=hipY-112*s*(o.torsoL??1), tw=F.sh*s, bw=F.hip*s, ww=F.wa*s, wy=sh+(hipY-sh)*.62;
  const T=`M${X-tw},${sh+28*s} C${X-tw},${sh} ${X-tw+26*s},${sh-6*s} ${X},${sh-6*s} C${X+tw-26*s},${sh-6*s} ${X+tw},${sh} ${X+tw},${sh+28*s} C${X+tw},${sh+50*s} ${X+ww},${wy-24*s} ${X+ww},${wy} C${X+ww},${wy+18*s} ${X+bw},${hipY-4*s} ${X+bw},${hipY+8*s} C${X+bw},${hipY+20*s} ${X+bw-12*s},${hipY+22*s} ${X+bw-24*s},${hipY+22*s} L${X-bw+24*s},${hipY+22*s} C${X-bw+12*s},${hipY+22*s} ${X-bw},${hipY+20*s} ${X-bw},${hipY+8*s} C${X-bw},${hipY-4*s} ${X-ww},${wy+18*s} ${X-ww},${wy} C${X-ww},${wy-24*s} ${X-tw},${sh+50*s} ${X-tw},${sh+28*s}Z`;
  const tg=uid('tg'), tc=uid('tc');
  out+=`<defs><linearGradient id="${tg}" x1="0" y1="0" x2="1" y2=".3"><stop offset="0" stop-color="${c.topL}"/><stop offset=".5" stop-color="${c.top}"/><stop offset="1" stop-color="${c.topS}"/></linearGradient><clipPath id="${tc}"><path d="${T}"/></clipPath></defs>`;
  // back arm
  const A=o.arms??[[0,0],[0,0]];
- const AW=F.arm*s;const arm=(sx,a)=>{const x0=X+sx*(tw-8*s), y0=sh+24*s, ex=x0+sx*(14+a[0])*s, ey=y0+(52+a[1])*s, hx=x0+sx*(10+a[2])*s, hy=y0+(100+a[3])*s;
+ const AW=F.arm*s;const arm=(sx,a)=>{const x0=X+sx*(tw-8*s), y0=sh+24*s, ex=x0+sx*(14+a[0])*s, ey=y0+(52*(o.torsoL??1)+a[1])*s, hx=x0+sx*(10+a[2])*s, hy=y0+(100*(o.torsoL??1)+a[3])*s;
   return `<path d="M${x0},${y0} Q${ex},${ey} ${hx},${hy}" stroke="${OL}" stroke-width="${AW+6*s}" fill="none" stroke-linecap="round"/><path d="M${x0},${y0} Q${ex},${ey} ${hx},${hy}" stroke="${c.top}" stroke-width="${AW}" fill="none" stroke-linecap="round"/>
    <path d="M${x0-sx*4*s},${y0+6*s} Q${ex-sx*4*s},${ey} ${hx-sx*3*s},${hy-10*s}" stroke="${sx<0?c.topL:c.topS}" stroke-width="${6*s}" fill="none" stroke-linecap="round" opacity=".7"/>
    <path d="M${hx-12*s},${hy-8*s} L${hx+12*s},${hy-8*s}" stroke="${c.cuff??c.topS}" stroke-width="${10*s}" stroke-linecap="round"/>
@@ -148,7 +148,9 @@ function body(o){ // full character, feet at (X,G)
  out+=`<path d="M${X+tw-4*s},${sh+24*s} C${X+tw-4*s},${sh+50*s} ${X+ww-4*s},${wy-24*s} ${X+ww-4*s},${wy} C${X+ww-4*s},${wy+18*s} ${X+bw-4*s},${hipY-4*s} ${X+bw-4*s},${hipY+8*s}" stroke="${o.rim??'#ffb27a'}" stroke-width="${4*s}" fill="none" opacity=".8" stroke-linecap="round"/>`;
  const ra=arm(1,A[1]);
  if(!o.armsOver) out+=ra;
- out+=head(X+(o.lean??0)*s,sh-62*s*(o.headS??1),{...o.h,s:s*(o.headS??1),rim:o.rim});
+ const NK=(o.neck??0)*s;
+ if(NK) out+=`<path d="M${X-14*s},${sh+4*s} L${X-13*s},${sh-NK-10*s} L${X+13*s},${sh-NK-10*s} L${X+14*s},${sh+4*s}Z" fill="#2a2238" stroke="${OL}" stroke-width="${2.4*s}"/><path d="M${X+4*s},${sh-NK} L${X+6*s},${sh}" stroke="#4a3a5a" stroke-width="${3*s}"/>`;
+ out+=head(X+(o.lean??0)*s,sh-NK-62*s*(o.headS??1),{...o.h,s:s*(o.headS??1),rim:o.rim});
  if(o.armsOver) out+=(o.armsOver==='both'?arm(-1,A[0]):'')+ra;
  return out;
 }
@@ -334,5 +336,5 @@ HAIR.bun2=(c,cL,cS)=>(x,y,s)=>{const P=(d)=>d.replace(/(-?\d+\.?\d*),(-?\d+\.?\d
  // clip
  o+=`<g transform="translate(${x-56*s},${y-62*s}) rotate(-28)"><rect x="${-18*s}" y="${-7*s}" width="${36*s}" height="${14*s}" rx="${5*s}" fill="#e3232c" stroke="${OL}" stroke-width="${2.4*s}"/><rect x="${-9*s}" y="${-2*s}" width="${18*s}" height="${4*s}" rx="${2*s}" fill="#ff8a8a"/></g>`;
  return o;};
-const AGE={y18:{s:1.05,headS:.87,legL:1.24,wide:1.04},kid:{s:.82,headS:1.05,legL:.85,wide:.95},teen:{s:1,headS:.92,legL:1.12,wide:1},adult:{s:1.08,headS:.84,legL:1.32,wide:1.08},elder:{s:1.02,headS:.86,legL:1.18,wide:1.12}};
+const AGE={y18:{s:1.08,headS:.7,legL:1.55,torsoL:1.18,neck:16},kid:{s:.82,headS:1.05,legL:.85,wide:.95},teen:{s:1,headS:.92,legL:1.12,wide:1},adult:{s:1.08,headS:.84,legL:1.32,wide:1.08},elder:{s:1.02,headS:.86,legL:1.18,wide:1.12}};
 module.exports={head,body,HAIR,OUT,ACC,AGE,OL,rnd};
