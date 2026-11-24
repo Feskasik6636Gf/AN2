@@ -2,7 +2,7 @@ const {head,body,HAIR,OUT,AGE,OL}=require('./bean.js');const {chromium}=require(
 const W=2400,H=1600;
 const GIRL={top:'#efe6dc',topL:'#fffaf4',topS:'#cdbfb2',pants:'#2a2426',pantsL:'#4a4244',pantsS:'#141012',shoe:'#f7f5f2',sole:'#d8d2cc',toe:'#ffffff',lace:'#d8d2cc'};
 const hr=HAIR.bun2('#8e3a22','#c4683e','#5e2012');
-const base={...AGE.teen,fig:'girl',c:GIRL,outfit:OUT.offshoulder,baggy:true,chunky:true,rim:'#ffd59a',cast:[1.4,.2],legs:[-6,6]};
+const base={...AGE.y18,fig:'girl',c:GIRL,outfit:OUT.offshoulder,baggy:true,chunky:true,rim:'#ffd59a',cast:[1.4,.2],legs:[-6,6]};
 const H0=(m)=>({mood:m,hair:hr,lashes:true,shape:'egg'});
 const lab=(x,y,a)=>`<text x="${x}" y="${y}" text-anchor="middle" font-family="DejaVu Sans" font-weight="bold" font-size="28" fill="${OL}">${a}</text>`;
 const fx={love:(x,y)=>[[-120,-40,1],[110,-70,.8],[130,10,.6],[-130,40,.7]].map(([a,b,k])=>`<path transform="translate(${x+a},${y+b}) scale(${k})" d="M0,22 C-30,0 -22,-22 0,-8 C22,-22 30,0 0,22Z" fill="#ff6a8a" stroke="${OL}" stroke-width="3"/>`).join(''),

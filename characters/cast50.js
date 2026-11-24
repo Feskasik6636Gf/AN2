@@ -6,8 +6,8 @@ const H={swoop:c=>HAIR.swoop(c,sh(c,.35)),buns:c=>HAIR.buns(c,sh(c,.35)),beanie:
 const BR='#3a2418',BK='#1a1214',BL='#e8c070',RD='#a8442a',GR='#c9c6c0',WH='#ecebe6',AU='#8e3a22';
 // [name, age, fig, shape, hair, hairCol, outfit, pal, acc, mood, extra]
 const C=[
- ['Тёма',14,'boy','round','messy',BR,'hoodie2',pal('#e3232c','#2a2426','#e3232c',{toe:'#f6f2ec',lace:'#f6f2ec'}),null,'smug',{baggy:1}],
- ['Ая',14,'girl','egg','bun2',AU,'offshoulder',pal('#efe6dc','#2a2426','#f7f5f2'),null,'joy',{baggy:1,lashes:1,chunky:1}],
+ ['Тёма',18,'boy','round','messy','#6e3c22','hoodie2',pal('#e3232c','#2a2426','#e3232c',{toe:'#f6f2ec',lace:'#f6f2ec'}),null,'smug',{baggy:1}],
+ ['Ая',18,'girl','egg','bun2',AU,'offshoulder',pal('#efe6dc','#2a2426','#f7f5f2'),null,'joy',{baggy:1,lashes:1,chunky:1}],
  ['Мир',12,'boy','round','swoop',BR,'hoodie',pal('#ff9a3c','#2c3a66','#f6f2ec',{acc:'#2f7ae0'}),null,'joy'],
  ['Кира',13,'girl','egg','buns','#6a3a2a','varsity',pal('#2fb59a','#f0e2c8','#ff6f91',{acc:'#ffe2a8'}),null,'smug',{lashes:1}],
  ['Бруно',11,'chubby','wide','beanie','#e0485a','overall',pal('#4a6fd0','#2a2a3a','#3a2a20'),null,'shock'],
@@ -57,7 +57,7 @@ const C=[
  ['Шеф Луи',55,'chubby','wide','chef','#fff','chef',pal('#f6f4f0','#2a2a30','#1a1a20'),'mustache','smug'],
  ['Миллиардер',59,'boy','chin','swoop',GR,'suit',pal('#1a1a22','#1a1a22','#1a1410',{acc:'#ffd24a',shirt:'#f4f0e8'}),null,'smug'],
 ];
-const ageP=a=>a<=12?AGE.kid:a<=18?AGE.teen:a<50?AGE.adult:AGE.elder;
+const ageP=a=>a<=12?AGE.kid:a===18?AGE.y18:a<=18?AGE.teen:a<50?AGE.adult:AGE.elder;
 const W=2400,ROWH=520,COLS=5;
 function sheet(list,title,off){
  const rows=Math.ceil(list.length/COLS),Ht=140+rows*ROWH;

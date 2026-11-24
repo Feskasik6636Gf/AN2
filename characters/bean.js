@@ -334,5 +334,5 @@ HAIR.bun2=(c,cL,cS)=>(x,y,s)=>{const P=(d)=>d.replace(/(-?\d+\.?\d*),(-?\d+\.?\d
  // clip
  o+=`<g transform="translate(${x-56*s},${y-62*s}) rotate(-28)"><rect x="${-18*s}" y="${-7*s}" width="${36*s}" height="${14*s}" rx="${5*s}" fill="#e3232c" stroke="${OL}" stroke-width="${2.4*s}"/><rect x="${-9*s}" y="${-2*s}" width="${18*s}" height="${4*s}" rx="${2*s}" fill="#ff8a8a"/></g>`;
  return o;};
-const AGE={kid:{s:.82,headS:1.05,legL:.85,wide:.95},teen:{s:1,headS:.92,legL:1.12,wide:1},adult:{s:1.08,headS:.84,legL:1.32,wide:1.08},elder:{s:1.02,headS:.86,legL:1.18,wide:1.12}};
+const AGE={y18:{s:1.05,headS:.87,legL:1.24,wide:1.04},kid:{s:.82,headS:1.05,legL:.85,wide:.95},teen:{s:1,headS:.92,legL:1.12,wide:1},adult:{s:1.08,headS:.84,legL:1.32,wide:1.08},elder:{s:1.02,headS:.86,legL:1.18,wide:1.12}};
 module.exports={head,body,HAIR,OUT,ACC,AGE,OL,rnd};

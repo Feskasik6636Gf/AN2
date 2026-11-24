@@ -7,8 +7,8 @@ let s=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBo
 <filter id="gr"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .06 0"/></filter></defs><rect width="${W}" height="${H}" fill="url(#bg)"/>
 <text x="60" y="80" font-family="DejaVu Sans" font-weight="bold" font-size="46" fill="${OL}">ТВОЙ ГЕРОЙ — в нашем стиле</text>`;
 const T={teen:AGE.teen};
-s+=body({x:260,y:900,...AGE.teen,s:1.25,c:HERO,outfit:OUT.hoodie2,baggy:true,pocket:true,rim:'#ffd59a',cast:[1.4,.2],h:{mood:'smug',hair:hh,shape:'round'},arms:[[10,-10,-30,-20,0],[10,-10,-30,-20,0]],legs:[-8,8]});
-s+=body({x:640,y:900,...AGE.teen,s:1.25,c:HERO,outfit:OUT.hoodie2,baggy:true,rim:'#ffd59a',cast:[1.4,.2],h:{mood:'joy',hair:hh},arms:[[10,0,20,0,0],[30,-70,60,-170,-20]],legs:[-8,8]});
+s+=body({x:260,y:900,...AGE.y18,s:1.25,c:HERO,outfit:OUT.hoodie2,baggy:true,pocket:true,rim:'#ffd59a',cast:[1.4,.2],h:{mood:'smug',hair:hh,shape:'round'},arms:[[10,-10,-30,-20,0],[10,-10,-30,-20,0]],legs:[-8,8]});
+s+=body({x:640,y:900,...AGE.y18,s:1.25,c:HERO,outfit:OUT.hoodie2,baggy:true,rim:'#ffd59a',cast:[1.4,.2],h:{mood:'joy',hair:hh},arms:[[10,0,20,0,0],[30,-70,60,-170,-20]],legs:[-8,8]});
 s+=lab(260,960,'спокоен, руки в карманах')+lab(640,960,'привет!');
 const em=[['smug','хитрый'],['shock','шок'],['love','влюблён'],['joy','радость'],['sad','грустит'],['angry','злится'],['shy','смущён'],['tired','устал']];
 em.forEach(([m,t],i)=>{const col=i%4,row=Math.floor(i/4),x=1050+col*330,y=300+row*420;
