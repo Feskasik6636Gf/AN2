@@ -76,7 +76,8 @@ function head(x,y,o){ // x,y = head centre; o.s scale
   smug:`<path d="M${x-14*s},${my+2*s} Q${x+4*s},${my+6*s} ${x+18*s},${my-8*s}" stroke="#fff" stroke-width="${3.6*s}" fill="none" stroke-linecap="round"/>`,
   shy:`<path d="M${x-8*s},${my+2*s} q${4*s},${-5*s} ${8*s},0 q${4*s},${5*s} ${8*s},0" stroke="#fff" stroke-width="${3.2*s}" fill="none" stroke-linecap="round"/>`,
   tired:`<path d="M${x-11*s},${my+3*s} L${x+11*s},${my+2*s}" stroke="#fff" stroke-width="${3.4*s}" stroke-linecap="round"/>`,
- };out+=MO[m]||MO.calm;
+ };if(o.talk!=null&&o.talk>.08&&m!=='love'&&m!=='joy'){const op=o.talk;out+=`<path d="M${x-15*s},${my-2*s} Q${x},${my-6*s} ${x+15*s},${my-2*s} Q${x+12*s},${my+(4+16*op)*s} ${x},${my+(4+17*op)*s} Q${x-12*s},${my+(4+16*op)*s} ${x-15*s},${my-2*s}Z" fill="#fff"/><path d="M${x-8*s},${my+(2+12*op)*s} Q${x},${my+(-2+10*op)*s} ${x+8*s},${my+(2+12*op)*s} Q${x},${my+(3+15*op)*s} ${x-8*s},${my+(2+12*op)*s}Z" fill="#ff8a9a"/>`;}else if(o.talk!=null&&o.talk>.08&&m==='joy'){const op=o.talk;out+=`<path d="M${x-22*s},${my-4*s} Q${x},${my-2*s} ${x+22*s},${my-4*s} Q${x+16*s},${my+(8+14*op)*s} ${x},${my+(8+14*op)*s} Q${x-16*s},${my+(8+14*op)*s} ${x-22*s},${my-4*s}Z" fill="#fff"/>`;}else out+=MO[m]||MO.calm;
+ if(o.blink>.5&&m!=='joy'&&m!=='love'){for(const sx of [-1,1]){const cx=x+sx*ex,es=o.eyeS??1;out+=`<ellipse cx="${cx}" cy="${ey}" rx="${19*s*es}" ry="${24*s*es}" fill="#231d30"/><path d="M${cx-14*s*es},${ey+2*s} Q${cx},${ey+8*s} ${cx+14*s*es},${ey+2*s}" stroke="#fff" stroke-width="${3.6*s}" fill="none" stroke-linecap="round"/>`;}}
  if(m==='shock'||m==='sad')out+=`<path d="M${x+72*s},${y-40*s} q${10*s},${16*s} 0,${24*s} q${-10*s},${-8*s} 0,${-24*s}Z" fill="#a8dcff" stroke="${OL}" stroke-width="${2*s}"/>`;
  if(o.hair) out+=o.hair(x,y,s);
  if(o.acc) out+=o.acc(x,y,s);
@@ -123,13 +124,14 @@ function bodyCore(o){ // full character, feet at (X,G)
   FLEGS=out;out=out0;
  } else {
  for(const [i,sx] of [[0,-1],[1,1]]){
+  const Gi=G-((o.lift||[0,0])[i])*s;
   const lx=X+sx*(F.hip*.4)*s, fx0=X+sx*(F.hip*.42)*s+L[i]*s, lw=F.leg*s, bw2=o.baggy?lw*1.5:lw*.95;
   if(SIT==='chair') out+=`<ellipse cx="${lx}" cy="${hipY+12*s}" rx="${lw*.85}" ry="${lw*.6}" fill="${c.pants}" stroke="${OL}" stroke-width="${2.6*s}"/>`;
-  const LP=`M${lx-lw*.55},${hipY-6*s} L${lx+lw*.55},${hipY-6*s} L${fx0+bw2*.55},${G-16*s} L${fx0-bw2*.55},${G-16*s}Z`;
+  const LP=`M${lx-lw*.55},${hipY-6*s} L${lx+lw*.55},${hipY-6*s} L${fx0+bw2*.55},${Gi-16*s} L${fx0-bw2*.55},${Gi-16*s}Z`;
   out+=`<path d="${LP}" fill="url(#${lgid})" stroke="${OL}" stroke-width="${2.6*s}" stroke-linejoin="round"/>`;
-  if(o.baggy) out+=`<path d="M${fx0-bw2*.4},${G-40*s} q${bw2*.4},${8*s} ${bw2*.8},0 M${fx0-bw2*.2},${G-70*s} q${bw2*.3},${10*s} ${bw2*.6},${-4*s}" stroke="${c.pantsS??OL}" stroke-width="${2.4*s}" fill="none" opacity=".8"/>`;
-  out+=`<path d="M${lx+sx*lw*.1},${hipY+20*s} L${fx0+sx*bw2*.1},${G-30*s}" stroke="${OL}" stroke-width="${1.6*s}" opacity=".3"/>`;
-  const fx=fx0+sx*6*s, fy=G-8*s, sw=o.chunky?1.15:1;
+  if(o.baggy) out+=`<path d="M${fx0-bw2*.4},${Gi-40*s} q${bw2*.4},${8*s} ${bw2*.8},0 M${fx0-bw2*.2},${Gi-70*s} q${bw2*.3},${10*s} ${bw2*.6},${-4*s}" stroke="${c.pantsS??OL}" stroke-width="${2.4*s}" fill="none" opacity=".8"/>`;
+  out+=`<path d="M${lx+sx*lw*.1},${hipY+20*s} L${fx0+sx*bw2*.1},${Gi-30*s}" stroke="${OL}" stroke-width="${1.6*s}" opacity=".3"/>`;
+  const fx=fx0+sx*6*s, fy=Gi-8*s, sw=o.chunky?1.15:1;
   out+=`<g transform="translate(${fx},${fy}) scale(${sw*s})"><path d="M-28,8 C-30,-18 4,-20 18,-10 C30,-4 32,8 22,10Z" fill="${c.shoe}" stroke="${OL}" stroke-width="2.4"/>
    ${c.toe?`<path d="M6,-14 C24,-10 32,0 30,8 L10,8 C12,0 10,-8 6,-14Z" fill="${c.toe}" stroke="${OL}" stroke-width="2"/>`:''}
    <path d="M-27,4 L27,4" stroke="${c.sole}" stroke-width="5"/><path d="M-20,-12 C-12,-16 -2,-16 6,-12" stroke="#fff" stroke-width="3" opacity=".45" fill="none"/>
