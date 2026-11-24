@@ -257,16 +257,15 @@ HAIR.messyOld=(c,cL,cS)=>(x,y,s)=>{let o='';const T=(dx,dy,a,L,w,b,col)=>o+=tuft
  return o;};
 // fluffy curly mop: back mass of scalloped curls + front cap with curl fringe
 HAIR.messyBack=(c,cL,cS)=>(x,y,s)=>{let o='';const cx=x,cy=y-22*s;
- const ring=[];for(let i=0;i<=16;i++){const a=(160+i*13.75)*Math.PI/180;ring.push([cx+Math.cos(a)*92*s,cy+Math.sin(a)*80*s,30+((i*7)%3)*5]);}
- ring.push([x-96*s,y+18*s,28],[x+96*s,y+18*s,28],[x-88*s,y+44*s,22],[x+88*s,y+44*s,22]);
+ const ring=[];for(let i=0;i<=10;i++){const a=(188+i*16.4)*Math.PI/180;ring.push([cx+Math.cos(a)*80*s,cy-6*s+Math.sin(a)*70*s,24+((i*7)%3)*4]);}
  for(const [px,py,r] of ring) o+=`<circle cx="${px}" cy="${py}" r="${r*s}" fill="${cS}" stroke="${OL}" stroke-width="${2.8*s}"/>`;
- o+=`<ellipse cx="${cx}" cy="${cy+6*s}" rx="${100*s}" ry="${84*s}" fill="${cS}"/>`;
+ o+=`<ellipse cx="${cx}" cy="${cy-10*s}" rx="${84*s}" ry="${66*s}" fill="${cS}"/>`;
  return o;};
 HAIR.messy=(c,cL,cS)=>(x,y,s)=>{let o='';
  // cap: top of head covered, bottom edge = curl fringe
- const fr=[[-90,-8],[-70,-26],[-48,-36],[-24,-30],[0,-40],[24,-30],[48,-38],[70,-24],[90,-6]];
- let d=`M${x-94*s},${y-4*s} C${x-104*s},${y-110*s} ${x+104*s},${y-110*s} ${x+94*s},${y-4*s}`;
- for(let i=fr.length-1;i>0;i--){const [x1,y1]=fr[i],[x0,y0]=fr[i-1];const mx=(x1+x0)/2,my=Math.max(y1,y0)+18;
+ const fr=[[-88,-20],[-68,-40],[-44,-30],[-20,-48],[6,-34],[30,-50],[54,-36],[74,-46],[88,-22]];
+ let d=`M${x-90*s},${y-20*s} C${x-100*s},${y-112*s} ${x+100*s},${y-112*s} ${x+90*s},${y-20*s}`;
+ for(let i=fr.length-1;i>0;i--){const [x1,y1]=fr[i],[x0,y0]=fr[i-1];const mx=(x1+x0)/2,my=Math.max(y1,y0)+10;
   d+=` Q${x+mx*s+8*s},${y+my*s} ${x+x0*s},${y+y0*s}`;}
  o+=`<path d="${d}Z" fill="${c}" stroke="${OL}" stroke-width="${2.8*s}" stroke-linejoin="round"/>`;
  // curl hooks on fringe tips
