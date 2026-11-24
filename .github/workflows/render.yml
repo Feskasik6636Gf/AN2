@@ -1,0 +1,80 @@
+name: IYA2D render
+on:
+  push:
+    paths: ['projects/*/render.request']
+  workflow_dispatch:
+    inputs:
+      project: {description: 'project folder name in projects/', required: true}
+permissions: {contents: write}
+concurrency: {group: render-${{ github.ref }}, cancel-in-progress: false}
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      project: ${{ steps.p.outputs.project }}
+      matrix: ${{ steps.m.outputs.matrix }}
+      frames: ${{ steps.m.outputs.frames }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 2}
+      - id: p
+        run: |
+          if [ -n "${{ github.event.inputs.project }}" ]; then P="${{ github.event.inputs.project }}";
+          else P=$(git diff --name-only HEAD~1 HEAD | grep -E '^projects/[^/]+/render.request$' | head -1 | cut -d/ -f2); fi
+          echo "project=$P" >> $GITHUB_OUTPUT; echo "project=$P"
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - run: cd engine && npm install --no-audit --no-fund
+      - id: m
+        run: |
+          cd engine && node render.js ../projects/${{ steps.p.outputs.project }} --events
+          F=$(node -e "console.log(require('../projects/${{ steps.p.outputs.project }}/build/events.json').frames)")
+          N=$(( (F + 179) / 180 )); [ $N -gt 40 ] && N=40; [ $N -lt 1 ] && N=1
+          M=$(node -e "const F=$F,N=$N,s=Math.ceil(F/N);console.log(JSON.stringify({include:[...Array(N).keys()].map(i=>({i,from:i*s,to:Math.min(F,(i+1)*s)}))}))")
+          echo "matrix=$M" >> $GITHUB_OUTPUT; echo "frames=$F" >> $GITHUB_OUTPUT; echo "chunks=$N frames=$F"
+  render:
+    needs: plan
+    runs-on: ubuntu-latest
+    strategy: {fail-fast: true, matrix: '${{ fromJson(needs.plan.outputs.matrix) }}'}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-dejavu-core >/dev/null
+      - run: cd engine && npm install --no-audit --no-fund && npx playwright install --with-deps chromium >/dev/null
+      - run: cd engine && node render.js ../projects/${{ needs.plan.outputs.project }} --from ${{ matrix.from }} --to ${{ matrix.to }}
+      - run: |
+          D=projects/${{ needs.plan.outputs.project }}/build
+          ffmpeg -v error -y -framerate 30 -start_number ${{ matrix.from }} -i $D/frames/f%05d.png -frames:v $(( ${{ matrix.to }} - ${{ matrix.from }} )) -c:v libx264 -pix_fmt yuv420p -crf 18 -preset medium -r 30 chunk_$(printf %03d ${{ matrix.i }}).mp4
+      - uses: actions/upload-artifact@v4
+        with: {name: 'chunk-${{ matrix.i }}', path: 'chunk_*.mp4', retention-days: 2}
+  finalize:
+    needs: [plan, render]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null && pip install -q numpy
+      - run: cd engine && npm install --no-audit --no-fund
+      - uses: actions/download-artifact@v4
+        with: {pattern: 'chunk-*', merge-multiple: true, path: chunks}
+      - name: concat + audio + mux
+        run: |
+          P=${{ needs.plan.outputs.project }}; D=projects/$P/build
+          cd engine && node render.js ../projects/$P --events && python mix.py ../projects/$P && cd ..
+          ls chunks/chunk_*.mp4 | sort | sed "s|^|file '$PWD/|;s|$|'|" > list.txt
+          ffmpeg -v error -y -f concat -safe 0 -i list.txt -c copy video.mp4
+          mkdir -p renders && ffmpeg -v error -y -i video.mp4 -i $D/mix.wav -c:v copy -c:a aac -b:a 192k -shortest -movflags +faststart renders/$P.mp4
+          ffprobe -v error -show_entries stream=codec_type,width,height,r_frame_rate:format=duration -of compact renders/$P.mp4
+      - uses: actions/upload-artifact@v4
+        with: {name: 'final-${{ needs.plan.outputs.project }}', path: 'renders/*.mp4', retention-days: 14}
+      - name: commit render back to branch
+        run: |
+          P=${{ needs.plan.outputs.project }}; S=$(stat -c %s renders/$P.mp4)
+          if [ $S -lt 95000000 ]; then
+            git config user.name "iya2d-render"; git config user.email "actions@users.noreply.github.com"
+            git add renders/$P.mp4 && git commit -m "render: $P" && for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
+          else echo "file too big for git ($S bytes) — download artifact final-$P"; fi

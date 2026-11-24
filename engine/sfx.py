@@ -180,6 +180,44 @@ def _(): d=1.8; t=T(d); ch=sum(sine(f,d) for f in (523,659,784,1046))*.18; retur
 @reg('bubbles')
 def _(): return mix(*[(rng.uniform(0,1.4),sweep(rng.uniform(300,600),rng.uniform(900,1600),.06)*env(int(.06*SR),.002,.05,3)*.4) for _ in range(20)],d=1.6)
 
+# ---------- footsteps & ambience (loopable beds) ----------
+@reg('step')
+def _(): d=.12; return bpf(noise(d),150,1800)*env(int(d*SR),.002,.06,4)*.8+sine(90,d)*env(int(d*SR),.001,.04,5)*.4
+@reg('stepHeel')
+def _(): d=.1; return bpf(noise(d),800,5000)*env(int(d*SR),.001,.04,5)*.6
+def bed(d,fn):
+    x=fn(d); fl=int(.3*SR); x[:fl]*=np.linspace(0,1,fl); x[-fl:]*=np.linspace(1,0,fl); return x
+@reg('ambRoom')
+def _(): return bed(8,lambda d: lpf(noise(d),300)*.25+sine(60,d)*.02)
+@reg('ambSchool')
+def _():
+    d=8; base=lpf(noise(d),900)*.25
+    chatter=mix(*[(rng.uniform(0,d-.6),bpf(noise(.5),300,2500)*np.abs(np.sin(np.linspace(0,np.pi*rng.integers(3,7),int(.5*SR))))*.25) for _ in range(40)],d=d)
+    return bed(d,lambda _:base+chatter)
+@reg('ambCrowd')
+def _():
+    d=8; return bed(d,lambda _: bpf(noise(d),250,2200)*(0.7+0.3*np.sin(np.arange(int(d*SR))/SR*2*np.pi*.4))*.6)
+@reg('ambStreet')
+def _():
+    d=8; cars=mix(*[(rng.uniform(0,d-2),lpf(noise(2),600)*np.sin(np.linspace(0,np.pi,int(2*SR)))*.5) for _ in range(4)],d=d)
+    birds=mix(*[(rng.uniform(0,d-.3),sweep(rng.uniform(2500,3500),rng.uniform(3500,4500),.12)*env(int(.12*SR),.01,.08,3)*.15) for _ in range(10)],d=d)
+    return bed(d,lambda _: lpf(noise(d),500)*.2+cars+birds)
+@reg('ambNight')
+def _():
+    d=8; crick=mix(*[(i*.5+rng.uniform(0,.1),sine(4200,.15)*(0.5+0.5*np.sign(np.sin(2*np.pi*40*np.arange(int(.15*SR))/SR)))*env(int(.15*SR),.01,.1,2)*.08) for i in range(15)],d=d)
+    return bed(d,lambda _: lpf(noise(d),250)*.15+crick)
+@reg('ambRain')
+def _():
+    d=8; drops=mix(*[(rng.uniform(0,d-.05),bpf(noise(.01),2000,8000)*.25) for _ in range(300)],d=d); return bed(d,lambda _: lpf(noise(d),4000)*.35+drops)
+@reg('ambOffice')
+def _():
+    d=8; keys=mix(*[(rng.uniform(0,d-.05),bpf(noise(.02),1500,6000)*env(int(.02*SR),.001,.015,3)*.2) for _ in range(60)],d=d); return bed(d,lambda _: lpf(noise(d),400)*.15+keys)
+@reg('ambNature')
+def _():
+    d=8; birds=mix(*[(rng.uniform(0,d-.3),sweep(rng.uniform(2200,3200),rng.uniform(3200,5000),.15)*env(int(.15*SR),.01,.1,3)*.2) for _ in range(24)],d=d); return bed(d,lambda _: sweep_filter(noise(d),300,900)*.25+birds)
+@reg('whooshCut')
+def _(): return whoosh(.25,500,6000,.9)
+
 if __name__=='__main__':
     out=sys.argv[1]; os.makedirs(out,exist_ok=True)
     for k,fn in S.items():
