@@ -53,6 +53,7 @@ function head(x,y,o){ // x,y = head centre; o.s scale
  };out+=MO[m]||MO.calm;
  if(m==='shock'||m==='sad')out+=`<path d="M${x+72*s},${y-40*s} q${10*s},${16*s} 0,${24*s} q${-10*s},${-8*s} 0,${-24*s}Z" fill="#a8dcff" stroke="${OL}" stroke-width="${2*s}"/>`;
  if(o.hair) out+=o.hair(x,y,s);
+ if(o.acc) out+=o.acc(x,y,s);
  return out;
 }
 
@@ -82,7 +83,7 @@ function body(o){ // full character, feet at (X,G)
  out+=`<g opacity=".32" filter="url(#${b2})"><path d="M${X-40*s},${G} L${X+40*s},${G} L${X+40*s+330*s*cs[1]*cs[0]},${G-14*s+330*s*cs[1]*.25} L${X+330*s*cs[1]*cs[0]-60*s},${G-14*s+330*s*cs[1]*.25}Z" fill="#3a1e2a"/><ellipse cx="${X+330*s*cs[1]*cs[0]-10*s}" cy="${G-16*s+330*s*cs[1]*.25}" rx="${80*s}" ry="${22*s}" fill="#3a1e2a"/></g>`;
  out+=`<ellipse cx="${X}" cy="${G+2*s}" rx="${62*s}" ry="${9*s}" fill="#1a0e18" opacity=".5" filter="url(#${blur})"/>`;
  // legs
- const hipY=G-120*s, L=o.legs??[0,0];
+ const hipY=G-120*s*(o.legL??1), L=o.legs??[0,0];
  for(const [i,sx] of [[0,-1],[1,1]]){
   out+=`<path d="M${X+sx*22*s},${hipY} L${X+sx*24*s+L[i]*s},${G-14*s}" stroke="${OL}" stroke-width="${30*s}" stroke-linecap="round"/><path d="M${X+sx*22*s},${hipY} L${X+sx*24*s+L[i]*s},${G-14*s}" stroke="${c.pants}" stroke-width="${24*s}" stroke-linecap="round"/>
        <path d="M${X+sx*22*s-5*s},${hipY+10*s} L${X+sx*24*s+L[i]*s-5*s},${G-24*s}" stroke="${c.pantsL}" stroke-width="${5*s}" stroke-linecap="round" opacity=".5"/>`;
@@ -91,7 +92,7 @@ function body(o){ // full character, feet at (X,G)
        <path d="M${fx-25*s},${fy+4*s} L${fx+24*s},${fy+4*s}" stroke="${c.sole}" stroke-width="${5*s}"/>`;
  }
  // torso
- const sh=G-232*s, tw=60*s, bw=64*s;
+ const sh=hipY-112*s, tw=60*s*(o.wide??1), bw=64*s*(o.wide??1);
  const T=`M${X-tw},${sh+30*s} C${X-tw},${sh} ${X-tw+24*s},${sh-6*s} ${X},${sh-6*s} C${X+tw-24*s},${sh-6*s} ${X+tw},${sh} ${X+tw},${sh+30*s} L${X+bw},${hipY+6*s} C${X+bw},${hipY+20*s} ${X+bw-10*s},${hipY+22*s} ${X+bw-22*s},${hipY+22*s} L${X-bw+22*s},${hipY+22*s} C${X-bw+10*s},${hipY+22*s} ${X-bw},${hipY+20*s} ${X-bw},${hipY+6*s}Z`;
  const tg=uid('tg'), tc=uid('tc');
  out+=`<defs><linearGradient id="${tg}" x1="0" y1="0" x2="1" y2=".3"><stop offset="0" stop-color="${c.topL}"/><stop offset=".5" stop-color="${c.top}"/><stop offset="1" stop-color="${c.topS}"/></linearGradient><clipPath id="${tc}"><path d="${T}"/></clipPath></defs>`;
@@ -136,4 +137,49 @@ const OUT={
   <circle cx="${X-38*s}" cy="${sh+50*s}" r="${5*s}" fill="#f2d37a" stroke="${OL}" stroke-width="${1.6*s}"/><circle cx="${X+38*s}" cy="${sh+50*s}" r="${5*s}" fill="#f2d37a" stroke="${OL}" stroke-width="${1.6*s}"/>
   <rect x="${X-20*s}" y="${sh+62*s}" width="${40*s}" height="${30*s}" rx="${4*s}" fill="${c.topS}" stroke="${OL}" stroke-width="${2*s}"/>`,
 };
-module.exports={head,body,HAIR,OUT,OL,rnd};
+
+// ---- extra hair ----
+Object.assign(HAIR,{
+ afro:(c,cL)=>(x,y,s)=>{let o='';for(let i=0;i<16;i++){const a=i/16*Math.PI*2;if(Math.sin(a)>.55)continue;o+=`<circle cx="${x+Math.cos(a)*84*s}" cy="${y-30*s+Math.sin(a)*70*s}" r="${30*s}" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/>`;}
+  return o+`<ellipse cx="${x}" cy="${y-40*s}" rx="${90*s}" ry="${64*s}" fill="${c}"/><path d="M${x-80*s},${y-10*s} C${x-60*s},${y-50*s} ${x+60*s},${y-50*s} ${x+80*s},${y-10*s} L${x+80*s},${y-60*s} L${x-80*s},${y-60*s}Z" fill="${c}"/>
+  <path d="M${x-40*s},${y-86*s} q${12*s},${-10*s} ${24*s},0 M${x+10*s},${y-94*s} q${12*s},${-10*s} ${24*s},0" stroke="${cL}" stroke-width="${4*s}" fill="none" stroke-linecap="round"/>`;},
+ pony:(c,cL)=>(x,y,s)=>`<path d="M${x+60*s},${y-50*s} C${x+150*s},${y-60*s} ${x+150*s},${y+50*s} ${x+110*s},${y+90*s} C${x+120*s},${y+30*s} ${x+100*s},${y-10*s} ${x+60*s},${y-20*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/>
+  <path d="M${x-80*s},${y-14*s} C${x-90*s},${y-90*s} ${x-30*s},${y-104*s} ${x+10*s},${y-102*s} C${x+60*s},${y-100*s} ${x+90*s},${y-70*s} ${x+80*s},${y-14*s} C${x+60*s},${y-50*s} ${x+20*s},${y-62*s} ${x-20*s},${y-56*s} C${x-50*s},${y-50*s} ${x-70*s},${y-36*s} ${x-80*s},${y-14*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/>
+  <circle cx="${x+70*s}" cy="${y-44*s}" r="${11*s}" fill="#ffd24a" stroke="${OL}" stroke-width="${2.4*s}"/>
+  <path d="M${x-50*s},${y-80*s} C${x-20*s},${y-98*s} ${x+30*s},${y-96*s} ${x+60*s},${y-74*s}" stroke="${cL}" stroke-width="${4*s}" fill="none" stroke-linecap="round"/>`,
+ cap:(c,cL)=>(x,y,s)=>`<path d="M${x-82*s},${y-20*s} C${x-84*s},${y-96*s} ${x+84*s},${y-96*s} ${x+82*s},${y-20*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/>
+  <path d="M${x-30*s},${y-24*s} C${x-60*s},${y-28*s} ${x-150*s},${y-22*s} ${x-150*s},${y-8*s} C${x-140*s},${y+2*s} ${x-60*s},${y-8*s} ${x-30*s},${y-10*s}Z" fill="${cL}" stroke="${OL}" stroke-width="${2.6*s}"/>
+  <circle cx="${x}" cy="${y-88*s}" r="${7*s}" fill="${cL}" stroke="${OL}" stroke-width="${2*s}"/><path d="M${x-20*s},${y-80*s} C${x},${y-90*s} ${x+30*s},${y-84*s} ${x+50*s},${y-66*s}" stroke="#fff" stroke-width="${3*s}" fill="none" opacity=".4"/>`,
+ braids:(c,cL)=>(x,y,s)=>[-1,1].map(sx=>{let o='';for(let k=0;k<4;k++)o+=`<ellipse cx="${x+sx*86*s}" cy="${y+(4+k*26)*s}" rx="${15*s}" ry="${15*s}" fill="${c}" stroke="${OL}" stroke-width="${2.4*s}"/>`;return o+`<circle cx="${x+sx*86*s}" cy="${y+112*s}" r="${7*s}" fill="#ff6f91" stroke="${OL}" stroke-width="${2*s}"/>`;}).join('')+
+  `<path d="M${x-82*s},${y-6*s} C${x-90*s},${y-92*s} ${x+90*s},${y-92*s} ${x+82*s},${y-6*s} C${x+60*s},${y-46*s} ${x+10*s},${y-60*s} ${x},${y-60*s} C${x-10*s},${y-60*s} ${x-60*s},${y-46*s} ${x-82*s},${y-6*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/>
+  <path d="M${x},${y-80*s} L${x},${y-60*s}" stroke="${OL}" stroke-width="${2.4*s}"/><path d="M${x-50*s},${y-70*s} C${x-30*s},${y-84*s} ${x-10*s},${y-84*s} ${x-4*s},${y-80*s}" stroke="${cL}" stroke-width="${4*s}" fill="none" stroke-linecap="round"/>`,
+ spiky:(c,cL)=>(x,y,s)=>{let o=`<path d="M${x-82*s},${y-14*s}`;const pts=[[-90,-50],[-80,-90],[-50,-80],[-40,-130],[-10,-96],[10,-140],[30,-98],[60,-124],[64,-82],[96,-80],[82,-14]];for(const [a,b] of pts)o+=` L${x+a*s},${y+b*s}`;
+  return o+` C${x+50*s},${y-50*s} ${x-50*s},${y-50*s} ${x-82*s},${y-14*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}" stroke-linejoin="round"/><path d="M${x-30*s},${y-88*s} L${x-14*s},${y-70*s} M${x+20*s},${y-92*s} L${x+26*s},${y-70*s}" stroke="${cL}" stroke-width="${4*s}" stroke-linecap="round"/>`;},
+ bald:(c,cL)=>(x,y,s)=>`<path d="M${x-84*s},${y-10*s} C${x-90*s},${y+30*s} ${x-70*s},${y+40*s} ${x-60*s},${y+20*s} M${x+84*s},${y-10*s} C${x+90*s},${y+30*s} ${x+70*s},${y+40*s} ${x+60*s},${y+20*s}" stroke="${c}" stroke-width="${16*s}" fill="none" stroke-linecap="round"/>
+  <path d="M${x-40*s},${y+50*s} C${x-20*s},${y+44*s} ${x+20*s},${y+44*s} ${x+40*s},${y+50*s} C${x+30*s},${y+62*s} ${x-30*s},${y+62*s} ${x-40*s},${y+50*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.2*s}"/>`,
+ long:(c,cL)=>(x,y,s)=>`<path d="M${x-84*s},${y-10*s} C${x-100*s},${y-100*s} ${x+100*s},${y-100*s} ${x+84*s},${y-10*s} L${x+92*s},${y+110*s} L${x+56*s},${y+100*s} L${x+62*s},${y-20*s} C${x+30*s},${y-56*s} ${x-30*s},${y-56*s} ${x-62*s},${y-20*s} L${x-56*s},${y+100*s} L${x-92*s},${y+110*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}" stroke-linejoin="round"/>
+  <path d="M${x-50*s},${y-76*s} C${x-20*s},${y-90*s} ${x+30*s},${y-88*s} ${x+60*s},${y-70*s}" stroke="${cL}" stroke-width="${4*s}" fill="none" stroke-linecap="round"/>`,
+});
+const ACC={
+ glasses:(x,y,s)=>`<g fill="none" stroke="#f2c94c" stroke-width="${4*s}"><circle cx="${x-30*s}" cy="${y-4*s}" r="${26*s}"/><circle cx="${x+30*s}" cy="${y-4*s}" r="${26*s}"/><path d="M${x-4*s},${y-6*s} L${x+4*s},${y-6*s}"/></g>`,
+ headphones:(x,y,s)=>`<path d="M${x-84*s},${y} C${x-90*s},${y-110*s} ${x+90*s},${y-110*s} ${x+84*s},${y}" stroke="${OL}" stroke-width="${14*s}" fill="none"/><path d="M${x-84*s},${y} C${x-90*s},${y-110*s} ${x+90*s},${y-110*s} ${x+84*s},${y}" stroke="#6a5af0" stroke-width="${8*s}" fill="none"/>
+  ${[-1,1].map(sx=>`<rect x="${x+sx*84*s-16*s}" y="${y-22*s}" width="${32*s}" height="${46*s}" rx="${12*s}" fill="#6a5af0" stroke="${OL}" stroke-width="${2.6*s}"/>`).join('')}`,
+ mustache:(x,y,s)=>`<path d="M${x},${y+20*s} C${x-14*s},${y+12*s} ${x-34*s},${y+14*s} ${x-40*s},${y+26*s} C${x-24*s},${y+30*s} ${x-10*s},${y+28*s} ${x},${y+22*s} C${x+10*s},${y+28*s} ${x+24*s},${y+30*s} ${x+40*s},${y+26*s} C${x+34*s},${y+14*s} ${x+14*s},${y+12*s} ${x},${y+20*s}Z" fill="#d8d4cc" stroke="${OL}" stroke-width="${2*s}"/>`,
+ bow:(x,y,s)=>`<g transform="translate(${x+54*s},${y-70*s}) rotate(18)"><path d="M0,0 L${-26*s},${-16*s} L${-26*s},${16*s}Z M0,0 L${26*s},${-16*s} L${26*s},${16*s}Z" fill="#ff6f91" stroke="${OL}" stroke-width="${2.4*s}"/><circle r="${7*s}" fill="#ff9fb5" stroke="${OL}" stroke-width="${2*s}"/></g>`,
+};
+// ---- extra outfits ----
+Object.assign(OUT,{
+ tee:(X,sh,hip,s,c)=>`<path d="M${X-30*s},${sh-4*s} Q${X},${sh+18*s} ${X+30*s},${sh-4*s}" fill="none" stroke="${OL}" stroke-width="${2.4*s}"/>
+  <circle cx="${X}" cy="${sh+60*s}" r="${24*s}" fill="${c.acc}" stroke="${OL}" stroke-width="${2.2*s}"/><path d="M${X-10*s},${sh+60*s} l${8*s},${8*s} l${14*s},${-16*s}" stroke="#fff" stroke-width="${4*s}" fill="none"/>`,
+ suit:(X,sh,hip,s,c)=>`<path d="M${X-24*s},${sh-6*s} L${X},${sh+60*s} L${X+24*s},${sh-6*s}Z" fill="${c.shirt}" stroke="${OL}" stroke-width="${2*s}"/>
+  <path d="M${X},${sh+4*s} L${X-8*s},${sh+16*s} L${X},${sh+64*s} L${X+8*s},${sh+16*s}Z" fill="${c.acc}" stroke="${OL}" stroke-width="${1.8*s}"/>
+  <path d="M${X-24*s},${sh-6*s} L${X-40*s},${sh+20*s} L${X-8*s},${sh+80*s} M${X+24*s},${sh-6*s} L${X+40*s},${sh+20*s} L${X+8*s},${sh+80*s}" stroke="${OL}" stroke-width="${2.4*s}" fill="none"/>
+  <circle cx="${X}" cy="${sh+96*s}" r="${4*s}" fill="${OL}"/>`,
+ puffer:(X,sh,hip,s,c)=>[0,1,2,3].map(i=>`<path d="M${X-80*s},${sh+20*s+i*28*s} Q${X},${sh+30*s+i*28*s} ${X+80*s},${sh+20*s+i*28*s}" stroke="${c.topS}" stroke-width="${3*s}" fill="none"/>`).join('')+
+  `<path d="M${X},${sh-6*s} L${X},${hip+30*s}" stroke="${OL}" stroke-width="${2.4*s}"/><rect x="${X-34*s}" y="${sh-14*s}" width="${68*s}" height="${22*s}" rx="${10*s}" fill="${c.topL}" stroke="${OL}" stroke-width="${2.4*s}"/>`,
+ apron:(X,sh,hip,s,c)=>`<path d="M${X-40*s},${sh+20*s} L${X+40*s},${sh+20*s} L${X+50*s},${hip+30*s} L${X-50*s},${hip+30*s}Z" fill="${c.acc}" stroke="${OL}" stroke-width="${2.2*s}"/>
+  <path d="M${X-40*s},${sh+22*s} L${X-50*s},${sh-6*s} M${X+40*s},${sh+22*s} L${X+50*s},${sh-6*s}" stroke="${c.acc}" stroke-width="${6*s}"/><rect x="${X-22*s}" y="${sh+64*s}" width="${44*s}" height="${30*s}" rx="${5*s}" fill="none" stroke="${OL}" stroke-width="${2*s}"/>`,
+ dress:(X,sh,hip,s,c)=>`<rect x="${X-90*s}" y="${hip-20*s}" width="${180*s}" height="${60*s}" fill="${c.topS}"/><path d="M${X-80*s},${hip-20*s} L${X+80*s},${hip-20*s}" stroke="${OL}" stroke-width="${2*s}"/>
+  ${[0,1,2,3,4].map(i=>`<circle cx="${X-40*s+i*20*s}" cy="${sh+50*s}" r="${5*s}" fill="#fff" opacity=".8"/>`).join('')}`,
+});
+module.exports={head,body,HAIR,OUT,ACC,OL,rnd};
