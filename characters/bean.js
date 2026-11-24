@@ -113,7 +113,7 @@ function body(o){ // full character, feet at (X,G)
  out+=`<path d="M${X+tw-4*s},${sh+20*s} L${X+bw-4*s},${hipY+4*s}" stroke="${o.rim??'#ffb27a'}" stroke-width="${4*s}" opacity=".8" stroke-linecap="round"/>`;
  out+=arm(1,A[1]);
  // head sits on collar
- out+=head(X+(o.lean??0)*s,sh-66*s,{...o.h,s:s*(o.headS??1),rim:o.rim});
+ out+=head(X+(o.lean??0)*s,sh-62*s*(o.headS??1),{...o.h,s:s*(o.headS??1),rim:o.rim});
  return out;
 }
 
@@ -182,4 +182,31 @@ Object.assign(OUT,{
  dress:(X,sh,hip,s,c)=>`<rect x="${X-90*s}" y="${hip-20*s}" width="${180*s}" height="${60*s}" fill="${c.topS}"/><path d="M${X-80*s},${hip-20*s} L${X+80*s},${hip-20*s}" stroke="${OL}" stroke-width="${2*s}"/>
   ${[0,1,2,3,4].map(i=>`<circle cx="${X-40*s+i*20*s}" cy="${sh+50*s}" r="${5*s}" fill="#fff" opacity=".8"/>`).join('')}`,
 });
-module.exports={head,body,HAIR,OUT,ACC,OL,rnd};
+
+Object.assign(OUT,{
+ labcoat:(X,sh,hip,s,c)=>`<rect x="${X-90*s}" y="${sh-20*s}" width="${180*s}" height="${400*s}" fill="#f4f6f8"/><path d="M${X+40*s},${sh} C${X+70*s},${sh+80*s} ${X+70*s},${hip} ${X+70*s},${hip+40*s} L${X+100*s},${hip+40*s} L${X+100*s},${sh}Z" fill="#cfd6de"/>
+  <path d="M${X-26*s},${sh-6*s} L${X},${sh+56*s} L${X+26*s},${sh-6*s}Z" fill="${c.shirt??'#7ab0e0'}" stroke="${OL}" stroke-width="${2*s}"/>
+  <path d="M${X-26*s},${sh-6*s} L${X-44*s},${sh+24*s} L${X-6*s},${sh+80*s} L${X-6*s},${hip+40*s} M${X+26*s},${sh-6*s} L${X+44*s},${sh+24*s} L${X+6*s},${sh+80*s} L${X+6*s},${hip+40*s}" stroke="${OL}" stroke-width="${2.4*s}" fill="none"/>
+  <rect x="${X+20*s}" y="${sh+40*s}" width="${30*s}" height="${24*s}" fill="none" stroke="${OL}" stroke-width="${2*s}"/><path d="M${X+26*s},${sh+36*s} L${X+26*s},${sh+52*s} M${X+36*s},${sh+34*s} L${X+36*s},${sh+52*s}" stroke="${c.acc}" stroke-width="${3*s}"/>
+  <path d="M${X-50*s},${sh+20*s} C${X-70*s},${sh+60*s} ${X-40*s},${sh+90*s} ${X-20*s},${sh+80*s}" stroke="#5a6a7a" stroke-width="${4*s}" fill="none"/><circle cx="${X-18*s}" cy="${sh+82*s}" r="${7*s}" fill="#8a9aaa" stroke="${OL}" stroke-width="${2*s}"/>`,
+ police:(X,sh,hip,s,c)=>`<path d="M${X-24*s},${sh-6*s} L${X},${sh+20*s} L${X+24*s},${sh-6*s}" fill="none" stroke="${OL}" stroke-width="${2.4*s}"/><path d="M${X},${sh+20*s} L${X},${hip+30*s}" stroke="${OL}" stroke-width="${2*s}"/>
+  ${[0,1,2].map(i=>`<circle cx="${X+8*s}" cy="${sh+40*s+i*24*s}" r="${3.5*s}" fill="#e8d070"/>`).join('')}
+  <path d="M${X-36*s},${sh+40*s} l${10*s},${-12*s} l${10*s},${12*s} l${-4*s},${16*s} l${-12*s},0Z" fill="#e8d070" stroke="${OL}" stroke-width="${1.8*s}"/>
+  <rect x="${X-90*s}" y="${hip-6*s}" width="${180*s}" height="${18*s}" fill="#1a1a22"/><rect x="${X-10*s}" y="${hip-8*s}" width="${20*s}" height="${22*s}" rx="${3*s}" fill="#c9c9d0" stroke="${OL}" stroke-width="${1.6*s}"/>`,
+ hivis:(X,sh,hip,s,c)=>`<path d="M${X-60*s},${sh} L${X-30*s},${sh} L${X},${sh+40*s} L${X+30*s},${sh} L${X+60*s},${sh} L${X+70*s},${hip+30*s} L${X-70*s},${hip+30*s}Z" fill="#c8f03a" stroke="${OL}" stroke-width="${2.2*s}"/>
+  <path d="M${X-66*s},${sh+80*s} L${X+66*s},${sh+80*s} M${X-68*s},${hip-10*s} L${X+68*s},${hip-10*s}" stroke="#e8eef2" stroke-width="${10*s}"/><path d="M${X-66*s},${sh+80*s} L${X+66*s},${sh+80*s} M${X-68*s},${hip-10*s} L${X+68*s},${hip-10*s}" stroke="${OL}" stroke-width="${1.4*s}" opacity=".5"/>`,
+ army:(X,sh,hip,s,c)=>{let o='';for(let i=0;i<26;i++){o+=`<ellipse cx="${X-80*s+((i*53)%160)*s}" cy="${sh+((i*37)%220)*s}" rx="${16*s}" ry="${9*s}" fill="${i%2?c.topS:c.topL}" opacity=".8" transform="rotate(${i*23} ${X-80*s+((i*53)%160)*s} ${sh+((i*37)%220)*s})"/>`;}
+  return o+`<rect x="${X-56*s}" y="${sh+20*s}" width="${112*s}" height="${130*s}" rx="${10*s}" fill="${c.vest}" stroke="${OL}" stroke-width="${2.4*s}"/>${[0,1,2].map(i=>`<rect x="${X-48*s+i*34*s}" y="${sh+90*s}" width="${28*s}" height="${40*s}" rx="${4*s}" fill="${c.vest}" stroke="${OL}" stroke-width="${2*s}"/>`).join('')}`;},
+ chef:(X,sh,hip,s,c)=>`<rect x="${X-90*s}" y="${sh-20*s}" width="${180*s}" height="${400*s}" fill="#f6f4f0"/>${[0,1].map(r=>[0,1,2].map(i=>`<circle cx="${X+(r?14:-14)*s}" cy="${sh+30*s+i*30*s}" r="${5*s}" fill="#2a2a30"/>`).join('')).join('')}
+  <path d="M${X-40*s},${sh-4*s} L${X+40*s},${sh-4*s} L${X+40*s},${sh+14*s} L${X-40*s},${sh+14*s}Z" fill="#e04a4a" stroke="${OL}" stroke-width="${2*s}"/>`,
+});
+Object.assign(HAIR,{
+ policeCap:(c,cL)=>(x,y,s)=>`<path d="M${x-86*s},${y-30*s} C${x-90*s},${y-110*s} ${x+90*s},${y-110*s} ${x+86*s},${y-30*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/><rect x="${x-88*s}" y="${y-44*s}" width="${176*s}" height="${18*s}" fill="#1a1a22" stroke="${OL}" stroke-width="${2*s}"/>
+  <path d="M${x-70*s},${y-26*s} C${x-30*s},${y-6*s} ${x+30*s},${y-6*s} ${x+70*s},${y-26*s}" fill="#1a1a22" stroke="${OL}" stroke-width="${2.4*s}"/><path d="M${x},${y-90*s} l${10*s},${12*s} l${-10*s},${14*s} l${-10*s},${-14*s}Z" fill="#e8d070" stroke="${OL}" stroke-width="${1.8*s}"/>`,
+ hardhat:(c,cL)=>(x,y,s)=>`<path d="M${x-80*s},${y-34*s} C${x-80*s},${y-120*s} ${x+80*s},${y-120*s} ${x+80*s},${y-34*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/><rect x="${x-100*s}" y="${y-44*s}" width="${200*s}" height="${18*s}" rx="${8*s}" fill="${c}" stroke="${OL}" stroke-width="${2.4*s}"/><path d="M${x},${y-110*s} L${x},${y-44*s}" stroke="${cL}" stroke-width="${10*s}"/>`,
+ helmet:(c,cL)=>(x,y,s)=>`<path d="M${x-94*s},${y-14*s} C${x-100*s},${y-120*s} ${x+100*s},${y-120*s} ${x+94*s},${y-14*s} C${x+60*s},${y-30*s} ${x-60*s},${y-30*s} ${x-94*s},${y-14*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/>${[0,1,2,3,4].map(i=>`<ellipse cx="${x-50*s+i*25*s}" cy="${y-70*s+(i%2)*14*s}" rx="${12*s}" ry="${7*s}" fill="${cL}" opacity=".8"/>`).join('')}`,
+ chefHat:(c,cL)=>(x,y,s)=>`<rect x="${x-60*s}" y="${y-110*s}" width="${120*s}" height="${70*s}" fill="#fff" stroke="${OL}" stroke-width="${2.6*s}"/>${[-40,0,40].map(dx=>`<circle cx="${x+dx*s}" cy="${y-120*s}" r="${36*s}" fill="#fff" stroke="${OL}" stroke-width="${2.6*s}"/>`).join('')}<rect x="${x-58*s}" y="${y-100*s}" width="${116*s}" height="${40*s}" fill="#fff"/><path d="M${x-60*s},${y-60*s} L${x+60*s},${y-60*s}" stroke="#ddd" stroke-width="${3*s}"/>`,
+ grey:(c,cL)=>HAIR.swoop('#c9c6c0','#f2f0ec'),
+});
+const AGE={kid:{s:.82,headS:1.05,legL:.85,wide:.95},teen:{s:1,headS:.92,legL:1.12,wide:1},adult:{s:1.08,headS:.84,legL:1.32,wide:1.08},elder:{s:1.02,headS:.86,legL:1.18,wide:1.12}};
+module.exports={head,body,HAIR,OUT,ACC,AGE,OL,rnd};
