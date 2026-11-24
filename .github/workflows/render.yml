@@ -4,9 +4,14 @@ on:
     paths: ['projects/*/render.request']
   workflow_dispatch:
     inputs:
-      project: {description: 'project folder name in projects/', required: true}
-permissions: {contents: write}
-concurrency: {group: render-${{ github.ref }}, cancel-in-progress: false}
+      project:
+        description: 'project folder name in projects/'
+        required: true
+permissions:
+  contents: write
+concurrency:
+  group: render-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   plan:
     runs-on: ubuntu-latest
@@ -35,7 +40,9 @@ jobs:
   render:
     needs: plan
     runs-on: ubuntu-latest
-    strategy: {fail-fast: true, matrix: '${{ fromJson(needs.plan.outputs.matrix) }}'}
+    strategy:
+      fail-fast: true
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
