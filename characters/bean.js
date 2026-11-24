@@ -37,7 +37,8 @@ function head(x,y,o){ // x,y = head centre; o.s scale
  // blush
  out+=`<ellipse cx="${x-50*s}" cy="${y+22*s}" rx="${13*s}" ry="${7*s}" fill="#ff7a8a" opacity="${m==='shy'?.75:.42}"/><ellipse cx="${x+50*s}" cy="${y+22*s}" rx="${13*s}" ry="${7*s}" fill="#ff7a8a" opacity="${m==='shy'?.75:.42}"/>`;
  for(const sx of [-1,1]){const cx=x+sx*ex;
-  if(m==='joy'){out+=`<path d="M${cx-15*s},${ey+4*s} Q${cx},${ey-18*s} ${cx+15*s},${ey+4*s}" stroke="#fff" stroke-width="${6*s}" fill="none" stroke-linecap="round"/>`;}
+  if(m==='love'){out+=`<path transform="translate(${cx},${ey}) scale(${s})" d="M0,20 C-30,0 -22,-24 0,-8 C22,-24 30,0 0,20Z" fill="#ff5f7e" stroke="${OL}" stroke-width="2.6"/><ellipse cx="${cx-8*s}" cy="${ey-8*s}" rx="${5*s}" ry="${3.5*s}" fill="#fff" opacity=".8"/>`;}
+  else if(m==='joy'){out+=`<path d="M${cx-15*s},${ey+4*s} Q${cx},${ey-18*s} ${cx+15*s},${ey+4*s}" stroke="#fff" stroke-width="${6*s}" fill="none" stroke-linecap="round"/>`;}
   else{
    const ry=(m==='shock'?25:22)*s, rx=(m==='shock'?19:17)*s, pr=(m==='shock'?6:8.5)*s;
    const ec=uid('ec');out+=`<defs><clipPath id="${ec}"><ellipse cx="${cx}" cy="${ey}" rx="${rx}" ry="${ry}"/></clipPath></defs><ellipse cx="${cx}" cy="${ey}" rx="${rx}" ry="${ry}" fill="#fbf7f2"/><g clip-path="url(#${ec})">`;
@@ -60,6 +61,7 @@ function head(x,y,o){ // x,y = head centre; o.s scale
  const my=y+30*s;
  const MO={
   calm:`<path d="M${x-14*s},${my} Q${x},${my+9*s} ${x+14*s},${my-1*s}" stroke="#fff" stroke-width="${3.6*s}" fill="none" stroke-linecap="round"/>`,
+  love:`<path d="M${x-18*s},${my-4*s} Q${x},${my-2*s} ${x+18*s},${my-4*s} Q${x+12*s},${my+16*s} ${x},${my+16*s} Q${x-12*s},${my+16*s} ${x-18*s},${my-4*s}Z" fill="#fff"/>`,
   joy:`<path d="M${x-22*s},${my-4*s} Q${x},${my-2*s} ${x+22*s},${my-4*s} Q${x+16*s},${my+20*s} ${x},${my+20*s} Q${x-16*s},${my+20*s} ${x-22*s},${my-4*s}Z" fill="#fff"/><path d="M${x-10*s},${my+14*s} Q${x},${my+8*s} ${x+10*s},${my+14*s} Q${x},${my+19*s} ${x-10*s},${my+14*s}Z" fill="#ff8a9a"/>`,
   shock:`<ellipse cx="${x}" cy="${my+4*s}" rx="${9*s}" ry="${13*s}" fill="#fff"/><ellipse cx="${x}" cy="${my+7*s}" rx="${5*s}" ry="${7*s}" fill="#ff8a9a"/>`,
   angry:`<path d="M${x-16*s},${my+6*s} Q${x},${my-6*s} ${x+16*s},${my+6*s}" stroke="#fff" stroke-width="${3.6*s}" fill="none" stroke-linecap="round"/>`,
