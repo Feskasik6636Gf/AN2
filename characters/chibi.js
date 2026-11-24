@@ -5,7 +5,7 @@ const setSeed=v=>{seed=v};
 let n=0;const uid=p=>p+(n++);
 const C={skin:'#fdd8bf',skinS:'#f3b297',skinD:'#e08f78',blush:'#ff8f8f',
  hair:'#8a4a26',hairS:'#5a2c16',hairL:'#c07a44',iris:'#6a3a1e',irisL:'#b8743e',
- top:'#1fa884',topS:'#147a60',topL:'#4fd0aa',str:'#f4f1ea',pants:'#2b2733',pantsS:'#1a1720',shoe:'#f6f3ee',shoeS:'#d6d0c8',shoeA:'#1fa884'};
+ top:'#e3232c',topS:'#a8121b',topL:'#ff5a5a',str:'#f4f1ea',pants:'#2a2220',pantsS:'#171210',shoe:'#e3232c',shoeS:'#a8121b',shoeA:'#f6f3ee'};
 
 // tapered curved lock: root (x,y), angle deg, length, width, bend
 function lock(x,y,a,L,w,b,fill,sw=3.2){
