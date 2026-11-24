@@ -314,5 +314,25 @@ HAIR.bun=(c,cL,cS)=>(x,y,s)=>{let o='';const T=(dx,dy,a,L,w,b,col)=>o+=tuft(x+dx
   <path d="M${x-30*s},${y-50*s} q${-4*s},${-14*s} ${2*s},${-26*s} M${x+28*s},${y-50*s} q${4*s},${-14*s} ${-2*s},${-26*s}" stroke="${cS}" stroke-width="${2.6*s}" fill="none" stroke-linecap="round"/>
   <g transform="translate(${x-58*s},${y-56*s}) rotate(-30)"><rect x="${-18*s}" y="${-7*s}" width="${36*s}" height="${14*s}" rx="${4*s}" fill="#e3232c" stroke="${OL}" stroke-width="${2.4*s}"/><rect x="${-8*s}" y="${-2*s}" width="${16*s}" height="${4*s}" rx="${2*s}" fill="#ff8a8a"/></g>`;
  return o;};
+HAIR.bun2=(c,cL,cS)=>(x,y,s)=>{const P=(d)=>d.replace(/(-?\d+\.?\d*),(-?\d+\.?\d*)/g,(m,a,b)=>`${(x+a*s).toFixed(1)},${(y+b*s).toFixed(1)}`);
+ const st=`stroke="${OL}" stroke-width="${2.8*s}" stroke-linejoin="round"`;let o='';
+ // messy bun: three loops + band
+ o+=`<path d="${P('M-44,-96 C-70,-120 -50,-160 -14,-150 C-6,-176 40,-176 44,-146 C76,-148 80,-104 46,-94 Z')}" fill="${c}" ${st}/>`;
+ o+=`<path d="${P('M-30,-110 C-36,-134 -14,-146 2,-134 M10,-140 C24,-156 44,-146 40,-124 M-10,-104 C0,-124 24,-124 30,-108')}" stroke="${cS}" stroke-width="${3*s}" fill="none" stroke-linecap="round"/>`;
+ o+=`<path d="${P('M-18,-150 C-4,-164 18,-164 30,-152')}" stroke="${cL}" stroke-width="${4*s}" fill="none" stroke-linecap="round"/>`;
+ o+=`<path d="${P('M-24,-160 C-36,-176 -30,-190 -18,-188 M34,-162 C44,-178 60,-172 56,-160')}" stroke="${OL}" stroke-width="${2.4*s}" fill="none" stroke-linecap="round"/>`;
+ // cap of hair over skull with soft wavy fringe (rounded scallops)
+ o+=`<path d="${P('M-88,-10 C-100,-80 -60,-108 0,-108 C60,-108 100,-80 88,-10 C78,-30 70,-40 58,-44 C54,-30 44,-26 34,-30 C30,-48 18,-56 4,-56 C2,-42 -10,-34 -22,-38 C-24,-52 -36,-58 -50,-56 C-52,-42 -64,-34 -74,-38 C-80,-30 -84,-20 -88,-10Z')}" fill="${c}" ${st}/>`;
+ // side curtain locks hugging face, ending in soft curl
+ o+=`<path d="${P('M-74,-40 C-96,-10 -98,30 -86,52 C-80,62 -66,62 -66,50 C-70,46 -76,46 -76,40 C-82,10 -76,-16 -60,-36Z')}" fill="${c}" ${st}/>`;
+ o+=`<path d="${P('M74,-40 C96,-10 98,30 86,52 C80,62 66,62 66,50 C70,46 76,46 76,40 C82,10 76,-16 60,-36Z')}" fill="${c}" ${st}/>`;
+ // strand lines + shine
+ o+=`<path d="${P('M-50,-90 C-30,-100 0,-102 30,-96 M-70,-30 C-80,0 -80,24 -76,36 M70,-30 C80,0 80,24 76,36 M-36,-70 C-30,-80 -20,-86 -8,-88 M20,-86 C34,-84 46,-76 54,-66')}" stroke="${cS}" stroke-width="${2.6*s}" fill="none" stroke-linecap="round"/>`;
+ o+=`<path d="${P('M-56,-80 C-30,-98 20,-100 54,-82')}" stroke="${cL}" stroke-width="${5*s}" fill="none" stroke-linecap="round" opacity=".9"/>`;
+ // a couple of soft flyaways
+ o+=`<path d="${P('M-80,-70 C-96,-80 -104,-72 -100,-62 M82,-72 C96,-84 106,-76 102,-64')}" stroke="${OL}" stroke-width="${2.2*s}" fill="none" stroke-linecap="round"/>`;
+ // clip
+ o+=`<g transform="translate(${x-56*s},${y-62*s}) rotate(-28)"><rect x="${-18*s}" y="${-7*s}" width="${36*s}" height="${14*s}" rx="${5*s}" fill="#e3232c" stroke="${OL}" stroke-width="${2.4*s}"/><rect x="${-9*s}" y="${-2*s}" width="${18*s}" height="${4*s}" rx="${2*s}" fill="#ff8a8a"/></g>`;
+ return o;};
 const AGE={kid:{s:.82,headS:1.05,legL:.85,wide:.95},teen:{s:1,headS:.92,legL:1.12,wide:1},adult:{s:1.08,headS:.84,legL:1.32,wide:1.08},elder:{s:1.02,headS:.86,legL:1.18,wide:1.12}};
 module.exports={head,body,HAIR,OUT,ACC,AGE,OL,rnd};
