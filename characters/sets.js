@@ -196,4 +196,4 @@ SETS.parkSunset=()=>{const C=Cam({vx:960,PH:470});const g=id('sky');let bg=`<def
  const fg=blurG(10,tree(C,-3.6,2.2,1.1));
  return {C,bg,fg,spots:[[-.8,4.8],[.4,5.2]],rim:'#ffc080',cast:[-1.8,.3],grade:['#ffd0a0',.5,'#ff7a4a']};};
 
-module.exports={SETS};
+module.exports={SETS,room,winBack,winSide,poster,door,shelf,clock,plantProp,beamFromWindow,ground,bldg,tree,lamp};
