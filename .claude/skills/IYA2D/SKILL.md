@@ -5,24 +5,32 @@ description: Делает готовый анимационный ролик «W
 
 # /IYA2D — производство ролика
 
-Работай в репозитории с этим скиллом. Движок: `engine/`, звуки: `sfx/`, проекты: `projects/<slug>/`, правила: `RULES.md`.
+Скилл самодостаточный: весь движок лежит в папке скилла (`engine/`, `templates/`, `references/`). Путь к папке скилла указан в строке «Base directory for this skill».
 Анализ референсов уже сделан: **не анализировать референсы заново**, сразу делать ролик.
 
 Перед работой прочитай:
-- `references/RULES.md` — 10 обязательных правил с проверками.
+- `references/RULES.md` — 10 обязательных правил.
 - `references/style.md` — стиль, монтаж и удержание.
 - `references/engine-api.md` — формат проекта и шотов; списки локаций, персонажей, жестов, эффектов и звуков.
 
 Общение с пользователем — по-русски, коротко и понятно.
 
-## 0. Подготовка (один раз за сессию)
+## 0. Развёртывание (один раз в рабочей папке или репозитории)
+Рабочая папка — корень текущего проекта или репозитория пользователя (`$W`). `$SK` — папка скилла.
 ```bash
-cd engine && node -e "require('playwright');require('three')" 2>/dev/null || npm install --no-audit --no-fund
+SK="<Base directory for this skill>"; W="$(pwd)"
+[ -f "$W/engine/director.js" ] || { mkdir -p "$W/engine" "$W/sfx" "$W/projects" "$W/renders"; cp -r "$SK/engine/." "$W/engine/"; cp "$SK/templates/RULES.md" "$W/RULES.md"; }
+mkdir -p "$W/.github/workflows" && cp -n "$SK/templates/render.yml" "$W/.github/workflows/render.yml"
+printf "node_modules/\nprojects/*/build/\n__pycache__/\n" >> "$W/.gitignore"
+cd "$W/engine" && (node -e "require('playwright');require('three')" 2>/dev/null || npm install --no-audit --no-fund)
 python3 -c "import numpy" || pip install -q numpy
 python3 -c "import faster_whisper" 2>/dev/null || pip install -q faster-whisper
-ls ../sfx | wc -l   # должно быть 70+; если пусто: python3 sfx.py ../sfx
+[ "$(ls ../sfx | wc -l)" -ge 70 ] || python3 sfx.py ../sfx      # звуки синтезируются за секунды
 ```
-Если в среде нет Chromium для Playwright: `npx playwright install chromium`.
+- Если Playwright не находит браузер: `npx playwright install chromium`. В облачной сессии Claude Code Chromium уже установлен.
+- Демо для проверки: `mkdir -p ../projects/demo && cp "$SK/templates/demo_project.js" ../projects/demo/project.js && node render.js ../projects/demo --qc`.
+- Если `faster-whisper` падает при открытии файла: в `transcribe.py` аудио уже читается через ffmpeg; нужен установленный ffmpeg.
+- Развёртывание нужно сделать один раз и закоммитить (`engine/`, `sfx/`, `.github/workflows/render.yml`, `RULES.md`), чтобы рендер на GitHub Actions видел движок.
 
 ## 1. Приём задания
 - Нужны тема ролика и **озвучка пользователя**: он записывает её сам, ты её не синтезируешь.

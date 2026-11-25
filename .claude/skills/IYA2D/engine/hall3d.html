@@ -1,0 +1,69 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
+import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
+import {BokehPass} from 'three/addons/postprocessing/BokehPass.js';
+import {UnrealBloomPass} from 'three/addons/postprocessing/UnrealBloomPass.js';
+import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
+import {ShaderPass} from 'three/addons/postprocessing/ShaderPass.js';
+const P=new URLSearchParams(location.search);const SHOT=P.get('shot')||'hall';const T=+(P.get('t')||0);
+const W=1920,H=1080;
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(W,H);
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.95;
+document.body.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+const INK=0x2a1e2a;
+// toon gradient
+const gm=new Uint8Array([90,150,215,255]);const grad=new THREE.DataTexture(gm,4,1,THREE.RedFormat);grad.needsUpdate=true;grad.minFilter=grad.magFilter=THREE.NearestFilter;
+const toon=(c,o={})=>new THREE.MeshToonMaterial({color:c,gradientMap:grad,...o});
+const edges=(mesh,th=15)=>{const e=new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry,th),new THREE.LineBasicMaterial({color:INK,transparent:true,opacity:.55}));e.position.copy(mesh.position);e.rotation.copy(mesh.rotation);e.scale.copy(mesh.scale);scene.add(e);return e;};
+function box(w,h,d,c,x,y,z,o={}){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),toon(c,o));m.position.set(x,y,z);m.castShadow=o.cast??true;m.receiveShadow=true;scene.add(m);if(o.edge!==false)edges(m);return m;}
+function plane(w,h,c,x,y,z,rx=0,ry=0,o={}){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),toon(c,o));m.position.set(x,y,z);m.rotation.set(rx,ry,0);m.receiveShadow=true;scene.add(m);return m;}
+function tex(draw,w=512,h=512,rep=[1,1]){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(...rep);t.colorSpace=THREE.SRGBColorSpace;return t;}
+// character sprite: billboard plane, bottom at floor, uniform px->m
+const PXM=517;
+async function sprite(file,x,z,face=0){const t=await new THREE.TextureLoader().loadAsync(file);t.colorSpace=THREE.SRGBColorSpace;
+ const w=t.image.width/PXM,h=t.image.height/PXM;const g=new THREE.PlaneGeometry(w,h);g.translate(0,h/2,0);
+ const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({map:t,transparent:true,alphaTest:.5,toneMapped:false,fog:false}));m.position.set(x,0,z);m.rotation.y=face;
+ m.castShadow=true;m.customDepthMaterial=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,map:t,alphaTest:.5});scene.add(m);
+ // contact shadow blob
+ const sh=new THREE.Mesh(new THREE.CircleGeometry(.32,32),new THREE.MeshBasicMaterial({color:0x1a0e18,transparent:true,opacity:.35,depthWrite:false}));sh.rotation.x=-Math.PI/2;sh.scale.set(1.2,.5,1);sh.position.set(x,.004,z);scene.add(sh);
+ return m;}
+
+let cam,focus=6,ap=.0006,bloom=[.18,.4,.92];
+const PAL=[0xe8434f,0x3a6ab0,0xffd24a,0x5aa86a,0x6a5af0,0xf08a3a,0x2fb59a,0xff7fb0];
+if(SHOT==='hall'){
+ scene.background=new THREE.Color(0xe8eef4);scene.fog=new THREE.Fog(0xe8eef4,18,40);
+ scene.add(new THREE.HemisphereLight(0xffffff,0x9a8a7a,1.0));
+ const sun=new THREE.DirectionalLight(0xfff2dc,2.2);sun.position.set(4,8,6);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-6,right:6,top:10,bottom:-10,near:1,far:40});sun.shadow.radius=6;scene.add(sun);
+ const RW=2.4,L0=-30;
+ const floorT=tex((g,w,h)=>{g.fillStyle='#ece2d0';g.fillRect(0,0,w,h);g.strokeStyle='#c8b89a';g.lineWidth=4;g.strokeRect(0,0,w,h);},256,256,[5,40]);
+ plane(RW*2,40,0xffffff,0,0,-14,-Math.PI/2,0,{map:floorT});
+ plane(1.4,40,0xffd24a,0,.002,-14,-Math.PI/2,0,{transparent:true,opacity:.2});
+ plane(RW*2,40,0xf6f8fa,0,3,-14,Math.PI/2);
+ for(const s of [-1,1]){plane(40,3,0xdfe8f0,s*RW,1.5,-14,0,-s*Math.PI/2);box(.05,.12,40,0x3a6ab0,s*(RW-.03),.94,-14,{edge:false});box(.05,.06,40,0xffd24a,s*(RW-.03),2.4,-14,{edge:false});}
+ // lockers
+ for(const s of [-1,1]) for(let z=4;z>-30;z-=.5){const c=(Math.round(z*2)%2)?0x3a6ab0:0x4a7ac0;const lk=box(.45,1.85,.48,c,s*(RW-.25),.95,z,{});
+   for(let k=0;k<3;k++) box(.01,.02,.3,0x1e3a6a,s*(RW-.48),1.62-k*.06,z,{edge:false,cast:false});box(.01,.14,.03,0xc8ccd4,s*(RW-.48),1.1,z+.16,{edge:false,cast:false});}
+ // ceiling lights
+ for(let z=3;z>-30;z-=3){box(1,.04,.5,0xfffbe8,0,2.98,z,{edge:false,emissive:0xfffbe8,emissiveIntensity:.5,cast:false});const pl=new THREE.PointLight(0xfff4e0,1.6,5,2);pl.position.set(0,2.7,z);scene.add(pl);}
+ // end door + trophy case + posters
+ box(4.8,3,.1,0xcfe0ee,0,1.5,-30);box(1,2.1,.06,0x8ab0d0,0,1.05,-29.94);
+ box(.5,1.6,1.4,0x8a5a3a,-RW+.3,.8,-6);for(let i=0;i<3;i++) box(.12,.3,.12,0xe8c860,-RW+.36,1.75,-6.4+i*.4,{edge:false});
+ for(let i=0;i<6;i++) plane(.6,.8,PAL[i],(i%2?1:-1)*(RW-.01),2.25,-3-i*4,0,(i%2?-1:1)*Math.PI/2);
+ // characters
+ await sprite('out/spr_tema_joy.png',-.5,0);await sprite('out/spr_aya_phone.png',.6,-.5);
+ for(let i=0;i<6;i++) await sprite(['out/spr_tema_back.png','out/spr_aya_smug.png'][i%2],(i%2?.9:-.9)+(i*.13)%.4,-8-i*2.4);
+ // camera with time-based dolly
+ cam=new THREE.PerspectiveCamera(42,W/H,.05,100);cam.position.set(.1+Math.sin(T*.6)*.15,1.45,3.6-T*.5);cam.lookAt(0,1.05,-4);focus=3.6;ap=.0009;
+}
+const comp=new EffectComposer(renderer);comp.addPass(new RenderPass(scene,cam));comp.addPass(new BokehPass(scene,cam,{focus,aperture:ap,maxblur:.008}));
+comp.addPass(new UnrealBloomPass(new THREE.Vector2(W,H),...bloom));comp.addPass(new OutputPass());
+comp.addPass(new ShaderPass({uniforms:{tDiffuse:{value:null}},vertexShader:`varying vec2 v;void main(){v=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+ fragmentShader:`uniform sampler2D tDiffuse;varying vec2 v;float h(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}void main(){vec3 c=texture2D(tDiffuse,v).rgb;vec2 d=v-.5;d.x*=1.5;c*=1.-.45*smoothstep(.4,1.1,length(d));c+=(h(v*1000.)-.5)*.04;gl_FragColor=vec4(c,1.);}`}));
+comp.render();window.__done=true;
+</script></body></html>

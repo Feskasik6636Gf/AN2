@@ -1,0 +1,26 @@
+// Demo project: "What if you got $1,000 every time..." (без озвучки, только субтитры)
+module.exports={
+ title:'demo', fps:30, voice:null,
+ music:[[0,9,'comedy'],[9,18,'upbeat']],
+ shots:[
+  {dur:3.2,set:'hallway',camera:{zoom:[1.0,1.08],follow:'tema'},
+   actors:[{id:'tema',char:'tema',at:[-1.8,5.2],moves:[{t0:0,t1:2.4,to:[-.5,4.6]}],moods:[[2.5,'joy']],gestures:[[2.5,'wave']]},
+           {id:'aya',char:'aya',at:[.7,5],gestures:[[0,'phone']],moods:[[0,'smug']],talk:[[.8,2.0]]}],
+   texts:[[.8,2.2,'bubble','Слышала про Тёму?',{actor:'aya'}],[0,3.2,'caption','А что, если...']]},
+  {dur:2.4,set:'hallway',transIn:'whip',camera:{zoom:[1.9,2.1],follow:'tema',bgBlur:3},
+   actors:[{id:'tema',char:'tema',at:[-.5,4.6],moods:[[0,'calm'],[.6,'shock']],gestures:[[.6,'handsFace']]}],
+   fx:[[.6,'zoomPunch',{target:'tema'}],[.7,'exclaim',{target:'tema'}]],texts:[[0,2.4,'caption','...за спиной о тебе говорят']]},
+  {dur:3.0,set:'hallway',camera:{zoom:[1.15,1.05],follow:'tema'},
+   actors:[{id:'tema',char:'tema',at:[-.5,4.6],moods:[[0,'shock'],[.5,'joy']],gestures:[[0,'idle'],[.4,'money']]}],
+   fx:[[.3,'moneyPop'],[.5,'sparkles',{target:'tema'}]],texts:[[0,3,'caption','+$1,000 каждый раз!']]},
+  {dur:3.2,set:'assembly',transIn:'flash',camera:{zoom:[1.0,1.12],focus:[960,430]},crowd:{x:[-5,5],z:[5.5,10],n:22,blurFar:9},
+   fgHeads:[[-3,2.6],[-1.2,2.3],[1,2.5],[3,2.4]],
+   actors:[{id:'tema',char:'tema',at:[0,14.2],Y:.9,moods:[[0,'smug']],gestures:[[0,'cheer']]}],
+   fx:[[.4,'billRain'],[1.6,'counter']],texts:[[0,3.2,'caption','Чем больше сплетен — тем ты богаче']]},
+  {dur:3.2,set:'nightSuburb',transIn:'fade',camera:{zoom:[1.12,1.0],focus:[960,600],pan:[[60,0],[-60,0]]},
+   actors:[{id:'tema',char:'tema',at:[-2.4,7.4],moves:[{t0:0,t1:2.6,to:[-.6,7.3]}],moods:[[0,'joy']]},{id:'aya',char:'aya',at:[.6,7.6],moods:[[0,'shy']],gestures:[[0,'crossed']]}],
+   fx:[[2.2,'hearts',{target:'aya'}]],texts:[[0,3.2,'caption','Но есть одна проблема...']]},
+  {dur:3.0,set:'bedroom',transIn:'whip',camera:{zoom:[1.0,1.15],follow:'tema'},
+   actors:[{id:'tema',char:'tema',at:[-.4,4.8],moods:[[0,'calm'],[1.0,'shock']],gestures:[[0,'phone'],[1.0,'handsFace']]}],
+   fx:[[.2,'notification'],[1.0,'shake'],[1.1,'sweat',{target:'tema'}]],texts:[[0,3,'caption','Кто тогда твои друзья?']]},
+ ]};
