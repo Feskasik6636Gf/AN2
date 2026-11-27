@@ -2,7 +2,7 @@
 const S=require('./stage.js');const {f}=S;
 const {SETS}=require('./sets.js');const {L2}=require('./sets2.js');
 const A=require('./anim.js');const {FX}=require('./fx.js');const CH=require('./chars.js');
-const {HP}=require('./props.js');const P3=require('./props3d.js');const {crowdReal,fgHeads}=require('./crowd.js');
+const {HP}=require('./props.js');const TH=require('./things.js');const P3=require('./props3d.js');const {crowdReal,fgHeads}=require('./crowd.js');
 const W=1920,H=1080;
 const LOC={...SETS,...L2};
 // extra sets built from props3d
@@ -38,6 +38,16 @@ const G={
  pocket:{arms:[[10,-10,-30,-20,0],[10,-10,-30,-20,0]],pocket:1},
  talk:{arms:[[6,0,16,0,0],null],talkHand:1},
  fists:{arms:[[20,-20,-20,-80,0],[20,-20,-20,-80,0]]},
+ clip:{arms:[[6,0,16,0,0],[30,-30,20,-90,0]],prop:'clip',side:1},
+ flare:{arms:[[6,0,16,0,0],[30,-70,60,-170,-10]],prop:'flare',side:1},
+ drink:{arms:[[6,0,16,0,0],[20,-30,-10,-110,-10]],prop:'drink',side:1},
+ laptop:{arms:[[30,-30,20,-90,0],[30,-30,20,-90,0]],prop:'laptop',side:1},
+ papers:{arms:[[6,0,16,0,0],[30,-30,20,-90,0]],prop:'papers',side:1},
+ icecream:{arms:[[6,0,16,0,0],[20,-30,-10,-110,-10]],prop:'icecream',side:1},
+ popcorn:{arms:[[10,0,30,-30,0],[6,0,16,0,0]],prop:'popcorn',side:-1},
+ canp:{arms:[[6,0,16,0,0],[20,-30,-10,-110,-10]],prop:'canp',side:1},
+ sandwich:{arms:[[6,0,16,0,0],[20,-30,-10,-110,-10]],prop:'sandwich',side:1},
+ radio:{arms:[[6,0,16,0,0],[20,-30,-10,-110,-10]],prop:'radio',side:1},
 };
 const ease=A.ease,lerp=A.lerp;
 const lerpArm=(a,b,k)=>a.map((v,i)=>lerp(v,b[i],k));
@@ -62,8 +72,11 @@ function headOf(C,s,base){const [fx,fy]=C.P(s.X,base.Y??0,s.Z);const hgt=C.k(s.Z
 function frameLayers(shot,B,t){const C=B.st.C;let act='',world='',screen='',camFx={dx:0,dy:0,scale:1,blur:0,sat:null};
  const ctxs={};
  // actors (far first)
- const states=B.actors.map(a=>({a,s:actorState(a,t)})).sort((p,q)=>q.s.Z-p.s.Z);
- for(const {a,s} of states){const b=a.base;const mood=stepAt(a.moods,t,b.h.mood);const ag=armsAt(a.gestures||[],t,t);
+ const states=[...B.actors.map(a=>({a,s:actorState(a,t)})),...(shot.things||[]).map(a=>({a,th:1,s:actorState(a,t)}))].sort((p,q)=>q.s.Z-p.s.Z);
+ for(const {a,s,th} of states){
+  if(th){const o={...a,walking:!!s.walking,cyc:s.phase*1.4/(a.stride||({trex:5,raptor:1.8,goat:.9,jeep:6}[a.k]||2))};if(a.pulses)o.pulses=a.pulses;
+   if(a.moves&&a.k==='jeep')o.walking=!!s.walking;
+   act+=TH.draw(C,a.k,s.X,s.Z,t,o);const [hx,hy]=TH.headPt(C,a.k,s.X,s.Z,a);const [bx,by]=C.P(s.X,(a.Y??0)+.5*(a.scale??1),s.Z);ctxs[a.id]={fx:bx,fy:by,hx,hy,bx,by,W,H};continue;}const b=a.base;const mood=stepAt(a.moods,t,b.h.mood);const ag=armsAt(a.gestures||[],t,t);
   let legs=b.legs,lift=[0,0],bob=0,arms=ag.arms;
   if(s.walking){const w=A.walk(s.phase*2,1);legs=w.legs;lift=w.lift;bob=w.bob;if(!(a.gestures||[]).some(g=>g[0]<=t&&g[1]!=='idle'))arms=w.arms;}
   const pose=stepAt(a.poses,t,a.pose);const g=ag.g;
@@ -76,7 +89,7 @@ function frameLayers(shot,B,t){const C=B.st.C;let act='',world='',screen='',camF
   ctxs[a.id]=headOf(C,s,o);}
  const defCtx=ctxs[(shot.actors||[])[0]?.id]||{W,H,fx:W/2,fy:900,hx:W/2,hy:400,bx:W/2,by:650};
  // fx
- for(const [t0,id,opt={}] of shot.fx||[]){const e=FXI[id];if(!e)continue;const d=t-t0;if(d<0||d>e.dur)continue;const r=e.draw(d,ctxs[opt.target]||defCtx);
+ for(const [t0,id,opt={}] of shot.fx||[]){const e=FXI[id];if(!e)continue;const d=t-t0;if(d<0||d>e.dur)continue;const r=e.draw(d,ctxs[opt.target]||defCtx,opt);
   if(r.over){if(SCREEN.has(id))screen+=r.over;else world+=r.over;}
   if(r.cam){camFx.dx+=r.cam.dx||0;camFx.dy+=r.cam.dy||0;if(r.cam.scale){camFx.scale*=r.cam.scale;camFx.ox=r.cam.ox;camFx.oy=r.cam.oy;}camFx.blur=Math.max(camFx.blur,r.cam.blur||0);if(r.cam.sat!=null)camFx.sat=r.cam.sat;}}
  // texts

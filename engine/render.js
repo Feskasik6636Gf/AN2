@@ -15,7 +15,7 @@ if(args.includes('--events')){
  console.log('events',ev.length,'total',TL.total.toFixed(2),'frames',N);process.exit(0);}
 const from=+(opt('--from')??0),to=Math.min(N,+(opt('--to')??N));
 const qc=args.includes('--qc');
-(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:W,height:H}});
+(async()=>{const b=await chromium.launch(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{});const p=await b.newPage({viewport:{width:W,height:H}});
  await p.setContent(`<body style="margin:0;overflow:hidden;background:#000"><svg id="root" xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><g id="cam"><g id="bg"></g><g id="act"></g><g id="fg"></g><g id="world"></g></g><g id="grade"></g><g id="screen"></g></svg></body>`);
  let cur=-1,B=null;const frames=[];
  if(qc){for(const [i,it] of TL.items.entries())for(const fr of [.1,.5,.9])frames.push(Math.round((it.start+it.shot.dur*fr)*FPS));}
