@@ -176,7 +176,7 @@ S(385.2,{set:'forest',camera:{zoom:[1.2,1.7],follow:'u'},
  actors:[U([0,5],{moods:[[385.2,'love']],gestures:[[385.2,'cheer']]}),TIM([-1.8,5.4],{moods:[[385.2,'joy']]}),LEX([1.8,5.4],{moods:[[385.2,'joy']]}),GRANT([-3.2,5.8],{moods:[[385.2,'calm']]})],
  fx:[[385.6,'hearts',{target:'u'}],[386,'sparkles']],texts:[T(385.3,386.6,'THE PEOPLE YOU SAVED',{size:64})]});
 S(386.52,{set:'forest',camera:{zoom:[1,1.5],follow:'grant'},
- actors:[GRANT([-2.2,5],{moves:[{t0:386.5,t1:389.8,to:[2.2,5]}],moods:[[386.5,'angry']],gestures:[[386.5,'crossed']]}),TIM([-2.2,4.7],{moves:[{t0:386.5,t1:389.8,to:[2.2,4.7]}],moods:[[386.5,'sad']],pose:'floor'}).constructor===Object?{id:'tim2',char:'tim',at:[-2.2,5.4],moves:[{t0:386.5,t1:389.8,to:[2.2,5.4]}],moods:[[386.5,'sad']]}:null].filter(Boolean),
+ actors:[GRANT([-2.2,5],{moves:[{t0:386.5,t1:389.8,to:[2.2,5]}],moods:[[386.5,'angry']],gestures:[[386.5,'crossed']]}),TIM([-2.2,5.4],{moves:[{t0:386.5,t1:389.8,to:[2.2,5.4]}],moods:[[386.5,'sad']]})],
  fx:[[387.2,'anger',{target:'grant'}],[388.4,'sweat',{target:'grant'}]],texts:[T(386.6,389.9,'GRANT HATES KIDS… CARRIES TIM ACROSS THE FOREST',{size:46})]});
 S(390.26,{set:'forest',camera:{zoom:[1.8,2.4],follow:'lex',bgBlur:4},
  actors:[LEX([0,4.6],{moods:[[390.3,'sad']],gestures:[[390.3,'talk']],talk:[[392.9,394]]}),U([-1.6,5],{moods:[[390.3,'calm']]})],
