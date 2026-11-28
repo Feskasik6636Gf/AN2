@@ -1,0 +1,13 @@
+const {S,P,q,a,bub,th,tag,ttl,mv,cam,Q,cuS}=require('./h.js');
+// cutaways that break up long shots
+S(3.2,{set:()=>Q.cryo(),camera:{zoom:[1.6,2.1],follow:'q'},actors:[q(0,4.6,{moods:[[3.2,'worry']],gestures:[[3.2,'idle']]})],texts:[tag(3.3,5.9,'ONE GENERATION TO STOP IT FROM ENDING',{actor:'q',dx:170,dy:-170})],neon:false});
+S(187.0,{set:()=>Q.tank9(),camera:{zoom:[1.1,1.4],focus:[1100,360]},fx:[[187.4,'sparkles']],texts:[tag(187.1,189.6,'EACH ONE · THOUSANDS OF TINY FROZEN LIVES',{xy:[960,120]})]});
+S(277.8,{set:'livingRoom',camera:{zoom:[1.7,2.1],follow:'q',bgBlur:3},actors:[q(0,3.9,{moods:[[277.8,'love']],gestures:[[277.8,'think']]},'home')],texts:[th(277.9,281.4,'what would I miss most?','q')],neon:false});
+S(304.5,{set:'hospitalRoom',camera:{zoom:[1.5,1.9],follow:'nurse'},actors:[a('nurse',0,4.7,{moods:[[304.5,'love']],gestures:[[304.5,'hug']]})],fx:[[305,'hearts',{target:'nurse'}]],texts:[tag(304.6,306.4,'2022 · A BABY GIRL · FROM A 1992 EMBRYO',{xy:[960,150]})]});
+S(332.0,{set:'studio',camera:{zoom:[1.8,2.3],follow:'caldwell',bgBlur:3},actors:[a('caldwell',0,4,{moods:[[332,'sad']],talk:[[332,335.3]]})],texts:[bub(332,335.4,'Those tanks need refilling every few weeks.','caldwell')],neon:false});
+S(341.6,{set:'gasStation',camera:{move:'push'},actors:[a('driver',0,5.4,{moods:[[341.6,'sad']],gestures:[[341.6,'idle']]})],texts:[tag(341.7,344.4,'A LOT OF THOSE PEOPLE HAVE QUIT',{actor:'driver',dx:170,dy:-170})]});
+S(523.0,{set:()=>Q.cryo(),camera:{zoom:[1.8,2.3],follow:'q',bgBlur:3},actors:[q(0,4.6,{pose:'floor',moods:[[523,'wow']],gestures:[[523,'hug']]},'lab')],fx:[[523.8,'sparkles',{target:'q'}]],texts:[tag(523.1,526.3,'A HANDWRITING YOU HAVE KNOWN YOUR ENTIRE LIFE',{actor:'q',dx:170,dy:-130})],neon:false});
+S(572.5,{set:'scienceLab',camera:{zoom:[1.5,1.9],follow:'voss'},actors:[a('voss',0,3.3,{moods:[[572.5,'worry']],gestures:[[572.5,'book']]}),a('doc',1.8,3.4,{moods:[[572.5,'calm']]})],texts:[tag(572.6,577.4,'YEARS OF TRICKY SCIENCE · NEVER DONE IN HUMANS',{xy:[960,150]})]});
+S(641.8,{set:'cityNight',camera:{move:'pull'},crowd:{x:[-6,6],z:[5.5,9],n:24},fx:[[642.4,'sparkles']],texts:[tag(641.9,643.8,'OUTSIDE · THE CANDLES STAY LIT',{xy:[960,150]})]});
+S(645.2,{set:'hospitalRoom',camera:{zoom:[1.5,1.9],follow:'q'},actors:[q(0,4.8,{moods:[[645.2,'cry'],[646.4,'love']],gestures:[[645.2,'hug']]},'lab')],fx:[[645.8,'tears',{target:'q'}]],texts:[tag(645.3,646.8,'YOU WATCH · AND YOU CRY',{actor:'q',dx:170,dy:-170})],neon:false});
+S(661.0,{set:()=>Q.cryo(),camera:{zoom:[1.4,1.8],follow:'q'},actors:[q(0,4.6,{moods:[[661,'tired']],gestures:[[661,'book']]},'lab')],texts:[tag(661.1,663.1,'DAYS · DRIVING · NIGHTS · COUNTING',{actor:'q',dx:170,dy:-170})],neon:false});
