@@ -33,7 +33,7 @@ function build(){
   const loud=(o.texts||[]).some(x=>['bubble','thought','title'].includes(x[2]));
   const zoomed=o.camera.zoom&&Math.max(...o.camera.zoom)>1.75;
   if(hasQ&&!loud&&!zoomed&&sp.neon!==false&&!o.insert){
-   o.texts=[...(o.texts||[]),[0,dur,'neon',ageAt(t0+dur/2),{actor:'q',color:'#ffd24a',since:0}]];}
+   o.texts=[...(o.texts||[]),[0,dur,'neon',ageAt(t0+dur/2),{actor:'q',color:'#ffd24a',since:0,quiet:true}]];}
   delete o.neon;
   shots.push(o);}
  const sum=shots.reduce((s,x)=>s+x.dur,0);shots[shots.length-1].dur=+(shots[shots.length-1].dur+TOTAL-sum).toFixed(3);

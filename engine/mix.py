@@ -26,6 +26,12 @@ for e in E['events']:
     if os.path.exists(os.path.join(sfxdir,name+'.wav')):
         a=(pan+1)*np.pi/4  # equal-power pan
         put(fxL,sfx(name),t,vol*np.cos(a)*1.414); put(fxR,sfx(name),t,vol*np.sin(a)*1.414)
+# merge consecutive beds of the same ambience so there is no fade dip / noise swell at every cut
+_m=[]
+for t0,t1,name in E['amb']:
+    if _m and _m[-1][2]==name and name and abs(_m[-1][1]-t0)<.6: _m[-1][1]=t1
+    else: _m.append([t0,t1,name])
+E['amb']=_m
 prev=None
 for t0,t1,name in E['amb']:
     if not name: prev=None; continue
@@ -44,7 +50,7 @@ if np.abs(voice).max()>0:
     w=int(.05*SR); ve=np.sqrt(np.convolve(voice**2,np.ones(w)/w,'same')); act=np.clip(ve/0.02,0,1)
     sm=np.convolve(act,np.ones(int(.3*SR))/int(.3*SR),'same'); duck=1-.65*sm
 else: duck=np.ones(n)
-bed=music*.14*duck+amb*.3*(1-.35*(1-duck))
+bed=music*.14*duck+amb*.18*(1-.35*(1-duck))
 L=voice+bed+fxL*.6; R=voice+bed+fxR*.6
 y=np.stack([L,R],1)
 rms=np.sqrt((y**2).mean())+1e-9; y=y*min(3,.1/rms)          # loudness to the reference (~ -20 dB RMS)

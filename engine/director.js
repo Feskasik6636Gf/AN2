@@ -155,7 +155,7 @@ function shotEvents(shot,B){const ev=[];
  for(const [t,id,v] of shot.sfx||[])ev.push([t,id,v??.8]);
  if(shot.transIn==='whip')ev.push([0,'whooshCut',.7]);if(shot.transIn==='flash')ev.push([0,'flash',.6]);
  for(const a of shot.actors||[]){let last=-1;for(let t=0;t<shot.dur;t+=1/60){const s=actorState({...a,base:null},t);if(!s.walking)continue;const st=Math.floor(s.phase*2);if(st!==last){if(last>=0)ev.push([t,st%2?'step':'stepHeel',.45,Math.max(-.8,Math.min(.8,s.X/5))]);last=st;}}}
- for(const tx of shot.texts||[]){const k=tx[2],pn=panOf(shot,tx[4]?.actor);if(k==='bubble'||k==='title')ev.push([tx[0],'pop',.5,pn]);if(k==='thought')ev.push([tx[0],'whooshSoft',.55,pn],[tx[0]+.05,'sparkle',.35,pn]);if(k==='neon')ev.push([tx[0],'spotOn',.5,pn]);if(k==='tag')ev.push([tx[0],'pointer',.45,0]);}
+ for(const tx of shot.texts||[]){const k=tx[2],pn=panOf(shot,tx[4]?.actor);if(tx[4]&&tx[4].quiet)continue;if(k==='bubble'||k==='title')ev.push([tx[0],'pop',.35,pn]);if(k==='thought')ev.push([tx[0],'whooshSoft',.4,pn],[tx[0]+.05,'sparkle',.25,pn]);if(k==='neon')ev.push([tx[0],'spotOn',.35,pn]);if(k==='tag')ev.push([tx[0],'pointer',.3,0]);}
  if(shot.insert)ev.push([0,'whooshSoft',.45,0]);
  return ev;}
 function timeline(project){const words=project.words||(project.captions&&project.captions.words)||null;const sh=project.shots;
