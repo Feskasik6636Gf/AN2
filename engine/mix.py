@@ -1,4 +1,5 @@
-# Audio mix: voice + music (ducked) + ambience beds + SFX events -> build/mix.wav
+# Audio mix (voice-led, stereo): voice + music (only where project.music says, ducked) + ambience beds (J-cut: next
+# location is heard 0.35 s before its picture) + SFX events panned to the actor's side -> build/mix.wav (stereo)
 # python mix.py <projectDir>
 import json,wave,os,sys,subprocess,numpy as np
 SR=44100
@@ -6,7 +7,6 @@ proj=sys.argv[1]; build=os.path.join(proj,'build'); here=os.path.dirname(os.path
 E=json.load(open(os.path.join(build,'events.json'))); total=E['total']; n=int((total+.5)*SR)
 sfxdir=os.path.join(here,'..','sfx')
 def load(p):
-    # any format -> mono 44.1k via ffmpeg
     raw=subprocess.run(['ffmpeg','-v','error','-i',p,'-ac','1','-ar',str(SR),'-f','s16le','-'],capture_output=True).stdout
     return np.frombuffer(raw,np.int16).astype(np.float64)/32768
 cache={}
@@ -18,31 +18,38 @@ def put(y,x,t,g):
     if k<0: x=x[-k:]; k=0
     L=min(len(x),len(y)-k)
     if L>0: y[k:k+L]+=x[:L]*g
-voice=np.zeros(n); music=np.zeros(n); amb=np.zeros(n); fx=np.zeros(n)
+voice=np.zeros(n); music=np.zeros(n); amb=np.zeros(n); fxL=np.zeros(n); fxR=np.zeros(n)
 if E.get('voice'):
-    vp=os.path.join(proj,E['voice']); v=load(vp); put(voice,v,E.get('voiceOffset',0),1.0)
-for t,name,vol in E['events']:
-    if os.path.exists(os.path.join(sfxdir,name+'.wav')): put(fx,sfx(name),t,vol)
+    put(voice,load(os.path.join(proj,E['voice'])),E.get('voiceOffset',0),1.0)
+for e in E['events']:
+    t,name,vol=e[0],e[1],e[2]; pan=e[3] if len(e)>3 else 0.0
+    if os.path.exists(os.path.join(sfxdir,name+'.wav')):
+        a=(pan+1)*np.pi/4  # equal-power pan
+        put(fxL,sfx(name),t,vol*np.cos(a)*1.414); put(fxR,sfx(name),t,vol*np.sin(a)*1.414)
+prev=None
 for t0,t1,name in E['amb']:
-    if not name: continue
-    b=sfx(name); seg=np.zeros(int((t1-t0)*SR)+1)
+    if not name: prev=None; continue
+    lead=.35 if (prev is not None and prev!=name and t0>.35) else 0.0   # J-cut
+    s0=t0-lead; b=sfx(name); seg=np.zeros(int((t1-s0)*SR)+1)
     for k in range(0,len(seg),len(b)-SR//2): put(seg,b,k/SR,1)
     fl=min(len(seg)//2,int(.25*SR)); seg[:fl]*=np.linspace(0,1,fl); seg[-fl:]*=np.linspace(1,0,fl)
-    put(amb,seg,t0,1)
+    put(amb,seg,s0,1); prev=name
 for m in E.get('music',[]):
     t0,t1,mood=m[0],m[1],m[2]
     tmp=os.path.join(build,f'music_{mood}_{int(t0*10)}.wav')
     subprocess.run([sys.executable,os.path.join(here,'music.py'),mood,str(t1-t0),tmp,str(int(t0)+1)],check=True,capture_output=True)
-    put(music,load(tmp),t0,1)
-# ducking: music/amb lower while voice is active
+    mu=load(tmp); fl=min(len(mu)//2,int(.8*SR)); mu[:fl]*=np.linspace(0,1,fl); mu[-fl:]*=np.linspace(1,0,fl)
+    put(music,mu,t0,1)
 if np.abs(voice).max()>0:
     w=int(.05*SR); ve=np.sqrt(np.convolve(voice**2,np.ones(w)/w,'same')); act=np.clip(ve/0.02,0,1)
-    sm=np.convolve(act,np.ones(int(.3*SR))/int(.3*SR),'same'); duck=1-.6*sm
+    sm=np.convolve(act,np.ones(int(.3*SR))/int(.3*SR),'same'); duck=1-.65*sm
 else: duck=np.ones(n)
-y=voice*1.0+music*.22*duck+amb*.35*(1-.3*(1-duck))+fx*.7
-peak=np.abs(y).max()+1e-9; y=y/peak*.95 if peak>.95 else y
-# loudness normalize-ish to ~-16 LUFS approx via RMS target
-rms=np.sqrt((y**2).mean())+1e-9; y=np.clip(y*min(3,.12/rms),-1,1)
+bed=music*.14*duck+amb*.3*(1-.35*(1-duck))
+L=voice+bed+fxL*.6; R=voice+bed+fxR*.6
+y=np.stack([L,R],1)
+rms=np.sqrt((y**2).mean())+1e-9; y=y*min(3,.1/rms)          # loudness to the reference (~ -20 dB RMS)
+y=np.tanh(y*1.2)/np.tanh(1.2)                              # soft limiter
+y=y/(np.abs(y).max()+1e-9)*0.708                            # peak -3 dBFS like the reference
 out=os.path.join(build,'mix.wav')
-with wave.open(out,'w') as w: w.setnchannels(1);w.setsampwidth(2);w.setframerate(SR);w.writeframes((y*32767).astype(np.int16).tobytes())
-print('mix',out,round(total,2))
+with wave.open(out,'w') as w: w.setnchannels(2);w.setsampwidth(2);w.setframerate(SR);w.writeframes((y*32767).astype(np.int16).tobytes())
+print('mix',out,round(total,2),'stereo')

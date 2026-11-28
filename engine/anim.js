@@ -14,6 +14,12 @@ function talk(t,spans){for(const [a,b] of spans) if(t>=a&&t<=b){const v=Math.abs
 // walk cycle in front/3-4 view: phase in cycles
 function walk(phase,amp=1){const s=Math.sin(phase*Math.PI*2);return {legs:[s*12*amp,-s*12*amp],lift:[Math.max(0,s)*16*amp,Math.max(0,-s)*16*amp],
  arms:[[6,0,16-s*14*amp,-Math.max(0,-s)*8,0],[6,0,16+s*14*amp,-Math.max(0,s)*8,0]],bob:-Math.abs(Math.cos(phase*Math.PI*2))*7*amp};}
+// run cycle: longer stride, bent arms, strong bob
+function run(phase,amp=1){const s=Math.sin(phase*Math.PI*2),c=Math.cos(phase*Math.PI*2);return {legs:[s*20*amp,-s*20*amp],lift:[Math.max(0,s)*30*amp,Math.max(0,-s)*30*amp],
+ arms:[[26,-24,10-s*34*amp,-46-Math.max(0,-s)*26,0],[26,-24,10+s*34*amp,-46-Math.max(0,s)*26,0]],bob:-Math.abs(c)*14*amp};}
+// dance: hips sway, alternating raised arms, small hops
+function dance(t,seed=0){const w=t*7.5+seed*1.7,s=Math.sin(w),c=Math.cos(w);return {legs:[s*9,-s*9],lift:[Math.max(0,s)*9,Math.max(0,-s)*9],
+ arms:[[34,-70,20-s*16,-120-c*40,-20*s],[34,-70,20+s*16,-120+c*40,20*s]],bob:-Math.abs(c)*10,sq:[1+.02*Math.abs(s),1-.025*Math.abs(c)],headBob:s*5,dx:s*7};}
 // wave gesture
 function wave(t){const w=Math.sin(t*Math.PI*5);return [30,-70,60+w*22,-170,-20+w*18];}
 // emotion pop (squash & stretch) after change at tc
@@ -25,4 +31,4 @@ function animActor(C,X,Z,o,{bob=0,sq=[1,1],br=1}={}){const [fx,fy]=C.P(X,o.Y??0,
  const sx=sq[0],sy=sq[1]*br;return `<g transform="translate(${f(fx)},${f(fy+bob*k)}) scale(${sx.toFixed(4)},${sy.toFixed(4)}) translate(${f(-fx)},${f(-fy)})">${S.actor(C,X,Z,o)}</g>`;}
 // pop-in text/graphic
 function popIn(t,t0,inner,x,y,dur=.35){const d=t-t0;if(d<0)return '';const sc=d<dur?ease(d/dur)*(1+.25*Math.sin(ease(d/dur)*Math.PI)):1;const fl=Math.sin(d*3)*3;return `<g transform="translate(${x},${y+fl}) scale(${sc.toFixed(3)})">${inner}</g>`;}
-module.exports={ease,lerp,clamp,noise,blink,talk,walk,wave,pop,breathe,animActor,popIn};
+module.exports={ease,lerp,clamp,noise,blink,talk,walk,run,dance,wave,pop,breathe,animActor,popIn};

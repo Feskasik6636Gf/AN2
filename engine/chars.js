@@ -1,25 +1,15 @@
 // Character registry: built-in cast + constructor. Usage: CH.get('tema') / CH.make({...})
-const {HAIR,OUT,ACC,AGE}=require('./bean.js');
+const {HAIR,OUT,ACC,AGE,ageBody}=require('./bean.js');
 const sh=(h,k)=>{const n=parseInt(h.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;const f=v=>Math.max(0,Math.min(255,Math.round(k>0?v+(255-v)*k:v*(1+k))));return '#'+[f(r),f(g),f(b)].map(v=>v.toString(16).padStart(2,'0')).join('');};
 const pal=(top,pants,shoe,ex={})=>({top,topL:sh(top,.3),topS:sh(top,-.28),pants,pantsL:sh(pants,.25),pantsS:sh(pants,-.35),shoe,sole:ex.sole??'#f2f0ec',acc:ex.acc??sh(top,-.45),shirt:ex.shirt??'#f4f0e8',shirtS:ex.shirtS??'#e04a5a',trim:ex.trim??'#f6efe0',vest:ex.vest??'#5a5a3a',toe:ex.toe,lace:ex.lace,...ex});
 const hc=(c)=>[c,sh(c,.35),sh(c,-.35)];
 const H={swoop:c=>HAIR.swoop(c,sh(c,.35)),buns:c=>HAIR.buns(c,sh(c,.35)),beanie:c=>HAIR.beanie(c,sh(c,.4)),pony:c=>HAIR.pony(c,sh(c,.4)),cap:c=>HAIR.cap(c,sh(c,-.4)),braids:c=>HAIR.braids(c,sh(c,.35)),spiky:c=>HAIR.spiky(c,sh(c,.4)),bald:c=>HAIR.bald(c,sh(c,.3)),long:c=>HAIR.long(c,sh(c,.35)),messy:c=>HAIR.messy(...hc(c)),bun2:c=>HAIR.bun2(...hc(c)),police:c=>HAIR.policeCap(c,sh(c,.2)),hard:c=>HAIR.hardhat(c,sh(c,.3)),helmet:c=>HAIR.helmet(c,sh(c,.25)),chef:c=>HAIR.chefHat('#fff','#fff')};
+for(const k of Object.keys(HAIR)) if(!H[k]) H[k]=c=>HAIR[k](c,sh(c,.35));
 const BR='#3a2418',BK='#1a1214',BL='#e8c070',RD='#a8442a',GR='#c9c6c0',WH='#ecebe6',AU='#8e3a22';
+// Взрослые 18–90 (c1..c50)
 const C=[
  ['Тёма',18,'boy','round','messy','#6e3c22','hoodie2',pal('#e3232c','#2a2426','#e3232c',{toe:'#f6f2ec',lace:'#f6f2ec'}),null,'smug',{baggy:1}],
  ['Ая',18,'girl','egg','bun2',AU,'offshoulder',pal('#efe6dc','#2a2426','#f7f5f2'),null,'joy',{baggy:1,lashes:1,chunky:1}],
- ['Мир',12,'boy','round','swoop',BR,'hoodie',pal('#ff9a3c','#2c3a66','#f6f2ec',{acc:'#2f7ae0'}),null,'joy'],
- ['Кира',13,'girl','egg','buns','#6a3a2a','varsity',pal('#2fb59a','#f0e2c8','#ff6f91',{acc:'#ffe2a8'}),null,'smug',{lashes:1}],
- ['Бруно',11,'chubby','wide','beanie','#e0485a','overall',pal('#4a6fd0','#2a2a3a','#3a2a20'),null,'shock'],
- ['Лея',10,'girl','round','braids','#2a1a14','tee',pal('#8a6ad8','#3a3050','#2a2438',{acc:'#ffd24a'}),'glasses','calm',{lashes:1}],
- ['Тоби',15,'slim','oval','spiky','#2a6ad8','hoodie',pal('#3a3a48','#6a7a5a','#e0e0e0',{acc:'#6a5af0'}),'headphones','tired'],
- ['Нова',16,'girl','egg','pony',BL,'dress',pal('#ff7fb0','#f2e8ff','#ffffff'),'bow','love',{lashes:1}],
- ['Зед',13,'boy','round',null,null,'puffer',pal('#e8c040','#2a2a30','#2a2a30'),null,'shy',{afro:'#2a1a14'}],
- ['Джей',17,'muscle','square','cap','#e8434f','tee',pal('#f2f0ec','#e8434f','#f2f0ec',{acc:'#e8434f'}),null,'smug'],
- ['Сэм',10,'boy','round','spiky','#d0703a','tee',pal('#5ac06a','#3a4a6a','#ff6a3a'),null,'joy'],
- ['Лили',11,'girl','round','pony','#c04a2a','overall',pal('#ff9ab0','#5a7ad0','#fff',{shirt:'#fff',shirtS:'#ff9ab0'}),null,'joy',{lashes:1}],
- ['Ник',16,'slim','oval','swoop',BK,'varsity',pal('#2a3a6a','#2a2a30','#f2f0ec',{acc:'#e8c040',trim:'#e8c040'}),null,'calm'],
- ['Мия',15,'girl','egg','long',BK,'hoodie',pal('#b49aff','#2a2a30','#f2f0ec',{acc:'#fff'}),null,'sad',{lashes:1}],
  ['Макс',18,'boy','chin','swoop',RD,'puffer',pal('#3a6ab0','#2a2a30','#2a2a30'),null,'smug'],
  ['Дана',19,'girl','egg','bun2',BK,'tee',pal('#f2f0ec','#3a4a6a','#f2f0ec',{acc:'#e3232c'}),null,'smug',{lashes:1}],
  ['Арт',21,'boy','square','messy',BK,'hoodie2',pal('#2a2a34','#4a4a56','#f2f0ec'),'headphones','calm'],
@@ -56,21 +46,65 @@ const C=[
  ['Профессор',57,'slim','oval','spiky',WH,'labcoat',pal('#f4f6f8','#3a3a48','#2a2a30',{shirt:'#c8303a',acc:'#6a5af0'}),'glasses','shock'],
  ['Шеф Луи',55,'chubby','wide','chef','#fff','chef',pal('#f6f4f0','#2a2a30','#1a1a20'),'mustache','smug'],
  ['Миллиардер',59,'boy','chin','swoop',GR,'suit',pal('#1a1a22','#1a1a22','#1a1410',{acc:'#ffd24a',shirt:'#f4f0e8'}),null,'smug'],
+ ['Тамара',62,'girl','oval','bun2',GR,'dress',pal('#4a7a9a','#2a2a30','#3a2a20'),'glasses','calm',{lashes:1}],
+ ['Виктор',63,'boy','chin','swoop',GR,'suit',pal('#5a4a3a','#3a3a40','#1a1410',{acc:'#8a2a2a'}),'mustache','smug'],
+ ['Галина',65,'chubby','round','buns',WH,'apron',pal('#c86a5a','#3a3040','#5a3a2a',{acc:'#fff4e0'}),'glasses','joy',{lashes:1}],
+ ['Пётр',67,'slim','oval','cap','#6a5a4a','puffer',pal('#6a7a5a','#3a3a3a','#4a3a2a'),null,'tired'],
+ ['Людмила',70,'girl','egg','long',WH,'suit',pal('#6a4a7a','#2a2a30','#2a2230',{acc:'#e8c070'}),'glasses','smug',{lashes:1}],
+ ['Семён',72,'chubby','wide','bald',WH,'overall',pal('#4a6a9a','#2a2a3a','#3a2a20',{shirt:'#e8dcc8',shirtS:'#8a5a3a'}),'mustache','joy'],
+ ['Зоя',75,'girl','round','bun2',WH,'dress',pal('#7a9a6a','#3a3040','#4a3a2a'),'glasses','joy',{lashes:1}],
+ ['Аркадий',77,'boy','chin','bald',GR,'suit',pal('#3a3a48','#2a2a34','#1a1410',{acc:'#4a6aa0'}),'glasses','calm',{cane:1}],
+ ['Валентина',80,'girl','oval','buns',WH,'puffer',pal('#9a6a8a','#3a3040','#3a2a20'),'glasses','calm',{lashes:1,cane:1}],
+ ['Степан',83,'slim','oval','bald',WH,'tee',pal('#8a8070','#4a4440','#3a2a20'),'mustache','tired',{cane:1}],
+ ['Агата',86,'girl','egg','long',WH,'dress',pal('#5a6a8a','#2a2a30','#2a2230'),'glasses','smug',{lashes:1,cane:1}],
+ ['Прадед Иван',90,'boy','chin','bald',WH,'suit',pal('#4a4038','#3a3430','#1a1410',{acc:'#8a6a3a'}),'glasses','calm',{cane:1}],
+ ['Ярик',23,'muscle','square','mohawk','#e8c040','jersey',pal('#c8303a','#2a2a34','#f2f0ec',{shirt:'#f6f2ec',num:'7'}),null,'smug'],
+ ['Влада',27,'girl','egg','pixie','#c85a3a','raincoat',pal('#f2c030','#2a2a34','#3a3a44'),'earrings','joy',{lashes:1}],
+ ['Ильяс',35,'boy','chin','swoop','#8a6a4a','turtleneck',pal('#3a3a44','#4a4a56','#2a2a30'),'glasses+goatee','calm'],
+ ['Тоня',66,'girl','round','buns',GR,'cardigan',pal('#a88a6a','#3a3a44','#4a3a2a',{shirt:'#f2eee6',acc:'#6a4a2a'}),'glasses','joy',{lashes:1}],
+ ['Гриша',55,'chubby','wide','balding',GR,'coat',pal('#8a7a5a','#2a2a34','#2a1a10'),'mustache','tired'],
+ ['Милена',24,'girl','oval','curly','#4a2a1a','denim',pal('#4a6aa0','#e8e4dc','#f2f0ec'),'earrings','love',{lashes:1}],
+ ['Фёдор',61,'boy','chin','fedora','#4a3a2a','suit',pal('#2a2a34','#2a2a34','#1a1410'),'stubble+scar','smug'],
+ ['Софья',29,'slim','egg','beret','#222222','striped',pal('#f6f2ec','#2a2a34','#f2f0ec',{acc:'#2a3a6a'}),'freckles','shy',{lashes:1}],
+ ['Давид',52,'chubby','wide','bald','#222','hawaiian',pal('#2fb59a','#e8dcc4','#8a5a2a',{shirt:'#2fb59a'}),'sunglasses','joy'],
+ ['Ника',31,'girl','egg','bandana','#3a6ab0','scrubs',pal('#5ab0b0','#5ab0b0','#f2f0ec',{acc:'#3a8a8a'}),null,'calm',{lashes:1}],
+ ['Богдан',26,'muscle','square','manbun','#2a1a14','tracksuit',pal('#2a5a3a','#2a5a3a','#f2f0ec',{shirt:'#f6f2ec'}),'beard','smug'],
+ ['Лада',33,'girl','oval','bob','#2a1a14','sweater',pal('#c8603a','#3a3050','#2a2a30'),null,'smug',{lashes:1}],
+ ['Эмиль',47,'boy','square','tophat','#1a1a20','suit',pal('#5a2a3a','#2a2a34','#1a1410',{acc:'#e8c040'}),'monocle+mustache','smug'],
+ ['Рита',36,'girl','round','dreads','#2a1a14','hoodie',pal('#e8a040','#3a3a44','#f2f0ec'),'freckles','joy',{lashes:1,bag:'#3a6ab0'}],
+ ['Зина',72,'girl','oval','long',WH,'puffer',pal('#6a4a8a','#2a2a34','#3a2a20'),'glasses+scarf','calm',{lashes:1}],
+ ['Алекс',20,'slim','oval','quiff','#3a2418','shirt',pal('#4a7ac8','#2a2a34','#f2f0ec',{shirt:'#f6f2ec'}),null,'joy'],
 ];
-const ageP=a=>a<=12?AGE.kid:a===18?AGE.y18:a<=18?AGE.teen:a<50?AGE.adult:AGE.elder;
+// Дети и подростки — отдельный каст для сюжетов (k1..k12)
+const KIDS=[
+ ['Мир',12,'boy','round','swoop',BR,'hoodie',pal('#ff9a3c','#2c3a66','#f6f2ec',{acc:'#2f7ae0'}),null,'joy'],
+ ['Кира',13,'girl','egg','buns','#6a3a2a','varsity',pal('#2fb59a','#f0e2c8','#ff6f91',{acc:'#ffe2a8'}),null,'smug',{lashes:1}],
+ ['Бруно',11,'chubby','wide','beanie','#e0485a','overall',pal('#4a6fd0','#2a2a3a','#3a2a20'),null,'shock'],
+ ['Лея',10,'girl','round','braids','#2a1a14','tee',pal('#8a6ad8','#3a3050','#2a2438',{acc:'#ffd24a'}),'glasses','calm',{lashes:1}],
+ ['Тоби',15,'slim','oval','spiky','#2a6ad8','hoodie',pal('#3a3a48','#6a7a5a','#e0e0e0',{acc:'#6a5af0'}),'headphones','tired'],
+ ['Нова',16,'girl','egg','pony',BL,'dress',pal('#ff7fb0','#f2e8ff','#ffffff'),'bow','love',{lashes:1}],
+ ['Зед',13,'boy','round',null,null,'puffer',pal('#e8c040','#2a2a30','#2a2a30'),null,'shy',{afro:'#2a1a14'}],
+ ['Джей',17,'muscle','square','cap','#e8434f','tee',pal('#f2f0ec','#e8434f','#f2f0ec',{acc:'#e8434f'}),null,'smug'],
+ ['Сэм',10,'boy','round','spiky','#d0703a','tee',pal('#5ac06a','#3a4a6a','#ff6a3a'),null,'joy'],
+ ['Лили',11,'girl','round','pony','#c04a2a','overall',pal('#ff9ab0','#5a7ad0','#fff',{shirt:'#fff',shirtS:'#ff9ab0'}),null,'joy',{lashes:1}],
+ ['Ник',16,'slim','oval','swoop',BK,'varsity',pal('#2a3a6a','#2a2a30','#f2f0ec',{acc:'#e8c040',trim:'#e8c040'}),null,'calm'],
+ ['Мия',15,'girl','egg','long',BK,'hoodie',pal('#b49aff','#2a2a30','#f2f0ec',{acc:'#fff'}),null,'sad',{lashes:1}],
+];
+const ageP=(a,fig)=>ageBody(a,fig);
 const slug=s=>s.toLowerCase().replace(/ё/g,'е').replace(/\s+/g,'_');
 const TR={'тема':'tema','ая':'aya','мир':'mir','кира':'kira','бруно':'bruno','лея':'leya','тоби':'tobi','нова':'nova','зед':'zed','джей':'jay'};
-function fromRow(c){const [n,age,fig,shape,hair,hcol,out,p,acc,mood,ex={}]=c;const y18=age===18;
- return {name:n,age,...ageP(age),fig,c:p,outfit:OUT[out],baggy:!!ex.baggy,chunky:!!ex.chunky,
-  h:{mood,shape:y18&&fig==='boy'?'chin':shape,eyeS:y18?(fig==='girl'?.88:.82):1,blushA:y18?.6:1,hair:hair?H[hair](hcol):null,acc:acc?ACC[acc]:null,lashes:!!ex.lashes,
+function fromRow(c){const [n,age,fig,shape,hair,hcol,out,p,acc,mood,ex={}]=c;if(!OUT[out])throw new Error('unknown outfit '+out);const ad=age>=18;
+ return {name:n,age,...ageP(age,fig),fig,c:p,outfit:OUT[out],bag:ex.bag||null,baggy:!!ex.baggy,chunky:!!ex.chunky,cane:!!ex.cane,
+  h:{mood,shape:age===18&&fig==='boy'?'chin':shape,eyeS:ad?(fig==='girl'?.88:.82)*(age>=65?.94:1):1,blushA:ad?(age>=60?.35:.6):1,hair:hair?H[hair](hcol):null,acc:acc?(acc.includes('+')?((x,y,s)=>acc.split('+').map(k=>ACC[k]?ACC[k](x,y,s):'').join('')):ACC[acc]):null,lashes:!!ex.lashes,
    hairBack:ex.afro?HAIR.afro(ex.afro,sh(ex.afro,.35)):null,backHair:hcol&&hcol!=='#fff'?hcol:(ex.afro||'#2a2238')},
   arms:[[6,0,16,0,0],[6,0,16,0,0]],legs:[-5,5]};}
 const REG={};C.forEach((c,i)=>{const o=fromRow(c);REG[slug(c[0])]=o;REG['c'+(i+1)]=o;if(TR[slug(c[0])])REG[TR[slug(c[0])]]=o;});
+KIDS.forEach((c,i)=>{const o=fromRow(c);REG[slug(c[0])]=o;REG['k'+(i+1)]=o;if(TR[slug(c[0])])REG[TR[slug(c[0])]]=o;});
 // signature tweaks for the two leads
 REG.tema.backpack='#2fb59a';
 REG.aya.armsOverDefault='both';
 function get(k){const o=REG[k]||REG[slug(k)];if(!o)throw new Error('unknown character '+k);return {...o,h:{...o.h},arms:o.arms.map(a=>[...a]),legs:[...o.legs]};}
 // constructor: make({age:30, fig:'boy', shape:'chin', hair:'swoop', hairCol:'#3a2418', outfit:'suit', top:'#2a2a34', pants:'#2a2a34', shoe:'#1a1410', acc:'glasses', mood:'calm', lashes:false})
-function make(o){return fromRow([o.name||'NPC',o.age??25,o.fig||'boy',o.shape||'round',o.hair||'swoop',o.hairCol||'#3a2418',o.outfit||'tee',pal(o.top||'#3a6ab0',o.pants||'#2a2a3a',o.shoe||'#f2f0ec',o.pal||{}),o.acc||null,o.mood||'calm',{lashes:o.fig==='girl'||o.lashes,baggy:o.baggy,afro:o.afro}]);}
-const list=()=>C.map((c,i)=>`${i+1}. ${c[0]} (${c[1]}) -> '${TR[slug(c[0])]||slug(c[0])}'`);
-module.exports={get,make,list,REG,pal,sh,H};
+function make(o){return fromRow([o.name||'NPC',o.age??25,o.fig||'boy',o.shape||'round',o.hair||'swoop',o.hairCol||'#3a2418',o.outfit||'tee',pal(o.top||'#3a6ab0',o.pants||'#2a2a3a',o.shoe||'#f2f0ec',o.pal||{}),o.acc||null,o.mood||'calm',{lashes:o.fig==='girl'||o.lashes,baggy:o.baggy,afro:o.afro,cane:o.cane,bag:o.bag}]);}
+const list=()=>[...C.map((c,i)=>`c${i+1}. ${c[0]} (${c[1]}) -> '${TR[slug(c[0])]||slug(c[0])}'`),...KIDS.map((c,i)=>`k${i+1}. ${c[0]} (${c[1]}, ребёнок) -> '${TR[slug(c[0])]||slug(c[0])}'`)];
+module.exports={get,make,list,REG,pal,sh,H,C,KIDS};

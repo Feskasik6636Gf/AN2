@@ -37,17 +37,18 @@ function head(x,y,o){ // x,y = head centre; o.s scale
    <path d="M${x-rw*.5},${y-rh*.6} q${rw*.2},${rh*.5} ${rw*.05},${rh*.9} M${x+rw*.1},${y-rh*.7} q${rw*.15},${rh*.5} ${-rw*.05},${rh*.95} M${x+rw*.55},${y-rh*.5} q${-rw*.1},${rh*.5} ${rw*.05},${rh*.8}" stroke="${OL}" stroke-width="${2*s}" fill="none" opacity=".45"/>
    <path d="M${x-rw*.6},${y-rh*.75} C${x-rw*.3},${y-rh*.95} ${x+rw*.2},${y-rh*.95} ${x+rw*.5},${y-rh*.8}" stroke="#fff" stroke-width="${5*s}" fill="none" opacity=".22" stroke-linecap="round"/></g>`;}
   if(o.hat) out+=o.hat(x,y,s);return out;}
- const m=o.mood??'calm', ex=30*s, ey=y+(-4)*s, lk=(o.look??0)*s;
+ const mo=o.mood??'calm', ALIAS={laugh:'joy',cry:'sad',fear:'shock',disgust:'tired',evil:'angry',worry:'sad',wow:'shock',sleepy:'tired',wink:'smug'}, m=ALIAS[mo]||mo, ex=30*s, ey=y+(-4)*s, lk=(o.look??0)*s;
+ if(o.wrinkles){const wa=Math.min(1,o.wrinkles);out+=`<g stroke="#8a7aa0" stroke-width="${2.2*s}" fill="none" stroke-linecap="round" opacity="${(.35+.35*wa).toFixed(2)}"><path d="M${x-26*s},${y-44*s} q${26*s},${-7*s} ${52*s},0"/>${wa>.4?`<path d="M${x-20*s},${y-35*s} q${20*s},${-5*s} ${40*s},0"/>`:''}<path d="M${x-44*s},${y+14*s} q${8*s},${5*s} ${16*s},${1*s} M${x+28*s},${y+15*s} q${8*s},${4*s} ${16*s},${-1*s}"/>${wa>.6?`<path d="M${x-60*s},${y-6*s} l${-7*s},${-4*s} M${x-60*s},${y} l${-8*s},${1*s} M${x+60*s},${y-6*s} l${7*s},${-4*s} M${x+60*s},${y} l${8*s},${1*s}"/>`:''}</g>`;}
  // blush
  out+=`<ellipse cx="${x-50*s}" cy="${y+22*s}" rx="${13*s}" ry="${7*s}" fill="#ff7a8a" opacity="${(m==='shy'?.75:.42)*(o.blushA??1)}"/><ellipse cx="${x+50*s}" cy="${y+22*s}" rx="${13*s}" ry="${7*s}" fill="#ff7a8a" opacity="${(m==='shy'?.75:.42)*(o.blushA??1)}"/>`;
  for(const sx of [-1,1]){const cx=x+sx*ex;
   if(m==='love'){out+=`<path transform="translate(${cx},${ey}) scale(${s})" d="M0,20 C-30,0 -22,-24 0,-8 C22,-24 30,0 0,20Z" fill="#ff5f7e" stroke="${OL}" stroke-width="2.6"/><ellipse cx="${cx-8*s}" cy="${ey-8*s}" rx="${5*s}" ry="${3.5*s}" fill="#fff" opacity=".8"/>`;}
-  else if(m==='joy'){out+=`<path d="M${cx-15*s},${ey+4*s} Q${cx},${ey-18*s} ${cx+15*s},${ey+4*s}" stroke="#fff" stroke-width="${6*s}" fill="none" stroke-linecap="round"/>`;}
+  else if(m==='joy'||(mo==='wink'&&sx<0)||mo==='sleepy'){out+=mo==='sleepy'?`<path d="M${cx-15*s},${ey} Q${cx},${ey+12*s} ${cx+15*s},${ey}" stroke="#fff" stroke-width="${5*s}" fill="none" stroke-linecap="round"/>`:`<path d="M${cx-15*s},${ey+4*s} Q${cx},${ey-18*s} ${cx+15*s},${ey+4*s}" stroke="#fff" stroke-width="${6*s}" fill="none" stroke-linecap="round"/>`;}
   else{
-   const es=o.eyeS??1; const ry=(m==='shock'?25:22)*s*es, rx=(m==='shock'?19:17)*s*es, pr=(m==='shock'?6:8.5)*s*es;
+   const es=o.eyeS??1; const big=(mo==='fear'||mo==='wow')?1.12:1; const ry=(m==='shock'?25:22)*s*es*big, rx=(m==='shock'?19:17)*s*es*big, pr=(mo==='fear'?4.2:mo==='evil'?5.6:mo==='wow'?9.5:m==='shock'?6:8.5)*s*es;
    const ec=uid('ec');out+=`<defs><clipPath id="${ec}"><ellipse cx="${cx}" cy="${ey}" rx="${rx}" ry="${ry}"/></clipPath></defs><ellipse cx="${cx}" cy="${ey}" rx="${rx}" ry="${ry}" fill="#fbf7f2"/><g clip-path="url(#${ec})">`;
    const py=ey+(m==='sad'?4:1)*s+(m==='smug'?7*s:0);
-   out+=`<circle cx="${cx+lk+(m==='angry'?-sx*3*s:0)}" cy="${py}" r="${pr}" fill="${OL}"/><circle cx="${cx+lk-3*s}" cy="${py-4*s}" r="${2.6*s}" fill="#fff"/>`;
+   out+=`<circle cx="${cx+lk+(m==='angry'?-sx*3*s:0)}" cy="${py}" r="${pr}" fill="${OL}"/><circle cx="${cx+lk-3*s}" cy="${py-4*s}" r="${2.6*s}" fill="#fff"/>`+(mo==='wow'?`<circle cx="${cx+lk+4*s}" cy="${py+3*s}" r="${1.6*s}" fill="#fff"/><path d="M${cx+lk+6*s},${py-8*s} l${1.4*s},${3*s} l${3*s},${1.4*s} l${-3*s},${1.4*s} l${-1.4*s},${3*s} l${-1.4*s},${-3*s} l${-3*s},${-1.4*s} l${3*s},${-1.4*s}Z" fill="#fff"/>`:mo==='cry'?`<ellipse cx="${cx+lk}" cy="${py+8*s}" rx="${9*s}" ry="${3*s}" fill="#a8dcff" opacity=".7"/>`:'');
    if(m==='smug'||m==='tired'||m==='angry'){ // lid
     const ly=m==='angry'?ey-ry*.25:ey-ry*.1;
     out+=`<path d="M${cx-rx-2},${ly+(m==='angry'?sx*6*s:0)} L${cx+rx+2},${ly-(m==='angry'?sx*6*s:0)} L${cx+rx+2},${ey-ry-3} L${cx-rx-2},${ey-ry-3}Z" fill="#2a2238"/>
@@ -58,13 +59,13 @@ function head(x,y,o){ // x,y = head centre; o.s scale
   }
   if(o.lashes&&(m==='joy')) out+=`<path d="M${cx+sx*15*s},${ey+4*s} l${sx*9*s},${-6*s}" stroke="${o.lashCol??'#f3e4d6'}" stroke-width="${3.4*s}" stroke-linecap="round"/>`;
   // floating light brows (signature)
-  const tilt={angry:9,sad:-8,shock:-2,smug:4,joy:-2,calm:0,shy:-6,tired:3}[m]??0, by=ey-(m==='shock'?36:31)*s;
+  const tilt={angry:9,sad:-8,shock:-2,smug:4,joy:-2,calm:0,shy:-6,tired:3,laugh:-3,cry:-12,fear:-11,disgust:6,evil:13,worry:-10,wow:-4,sleepy:2,wink:2}[mo]??{angry:9,sad:-8,shock:-2,smug:4,joy:-2,calm:0,shy:-6,tired:3}[m]??0, by=ey-((mo==='shock'||mo==='fear'||mo==='wow')?38:mo==='worry'?34:31)*s+(mo==='wink'&&sx<0?-4*s:0)+(o.browBop??0)*s;
   out+=`<path d="M${cx-13*s},${by+(sx<0?-tilt:tilt)*s*.0+(sx>0?tilt:-tilt)*s*-.0} " />`;
   const inY=by+tilt*s, outY=by-tilt*s*.4;
   const ix=cx-sx*12*s, oxp=cx+sx*12*s;
   out+=`<path d="M${oxp},${outY} Q${cx},${Math.min(inY,outY)-5*s} ${ix},${inY}" stroke="${o.brow??'#e9dccb'}" stroke-width="${5*s}" fill="none" stroke-linecap="round" opacity=".92"/>`;
  }
- if(o.nose!==false) out+=`<path d="M${x+3*s},${y+10*s} q${7*s},${6*s} ${-1*s},${11*s}" stroke="#8a7aa0" stroke-width="${3*s}" fill="none" stroke-linecap="round" opacity=".7"/>`;
+ if(o.nose!==false) out+=`<path d="M${x+3*s},${y+8*s} q${8*s},${7*s} ${-2*s},${12*s}" stroke="#8a7aa0" stroke-width="${3*s}" fill="none" stroke-linecap="round" opacity=".7"/><ellipse cx="${x+1*s}" cy="${y+21*s}" rx="${5.4*s}" ry="${3*s}" fill="#0a0810" opacity=".35"/><circle cx="${x-2*s}" cy="${y+12*s}" r="${2.2*s}" fill="#fff" opacity=".3"/>`;
  const my=y+30*s;
  const MO={
   calm:`<path d="M${x-14*s},${my} Q${x},${my+9*s} ${x+14*s},${my-1*s}" stroke="#fff" stroke-width="${3.6*s}" fill="none" stroke-linecap="round"/>`,
@@ -76,13 +77,29 @@ function head(x,y,o){ // x,y = head centre; o.s scale
   smug:`<path d="M${x-14*s},${my+2*s} Q${x+4*s},${my+6*s} ${x+18*s},${my-8*s}" stroke="#fff" stroke-width="${3.6*s}" fill="none" stroke-linecap="round"/>`,
   shy:`<path d="M${x-8*s},${my+2*s} q${4*s},${-5*s} ${8*s},0 q${4*s},${5*s} ${8*s},0" stroke="#fff" stroke-width="${3.2*s}" fill="none" stroke-linecap="round"/>`,
   tired:`<path d="M${x-11*s},${my+3*s} L${x+11*s},${my+2*s}" stroke="#fff" stroke-width="${3.4*s}" stroke-linecap="round"/>`,
- };if(o.talk!=null&&o.talk>.08&&m!=='love'&&m!=='joy'){const op=o.talk;out+=`<path d="M${x-15*s},${my-2*s} Q${x},${my-6*s} ${x+15*s},${my-2*s} Q${x+12*s},${my+(4+16*op)*s} ${x},${my+(4+17*op)*s} Q${x-12*s},${my+(4+16*op)*s} ${x-15*s},${my-2*s}Z" fill="#fff"/><path d="M${x-8*s},${my+(2+12*op)*s} Q${x},${my+(-2+10*op)*s} ${x+8*s},${my+(2+12*op)*s} Q${x},${my+(3+15*op)*s} ${x-8*s},${my+(2+12*op)*s}Z" fill="#ff8a9a"/>`;}else if(o.talk!=null&&o.talk>.08&&m==='joy'){const op=o.talk;out+=`<path d="M${x-22*s},${my-4*s} Q${x},${my-2*s} ${x+22*s},${my-4*s} Q${x+16*s},${my+(8+14*op)*s} ${x},${my+(8+14*op)*s} Q${x-16*s},${my+(8+14*op)*s} ${x-22*s},${my-4*s}Z" fill="#fff"/>`;}else out+=MO[m]||MO.calm;
- if(o.blink>.5&&m!=='joy'&&m!=='love'){for(const sx of [-1,1]){const cx=x+sx*ex,es=o.eyeS??1;out+=`<ellipse cx="${cx}" cy="${ey}" rx="${19*s*es}" ry="${24*s*es}" fill="#231d30"/><path d="M${cx-14*s*es},${ey+2*s} Q${cx},${ey+8*s} ${cx+14*s*es},${ey+2*s}" stroke="#fff" stroke-width="${3.6*s}" fill="none" stroke-linecap="round"/>`;}}
+  laugh:`<path d="M${x-28*s},${my-6*s} Q${x},${my-2*s} ${x+28*s},${my-6*s} Q${x+22*s},${my+30*s} ${x},${my+30*s} Q${x-22*s},${my+30*s} ${x-28*s},${my-6*s}Z" fill="#fff"/><path d="M${x-14*s},${my+22*s} Q${x},${my+12*s} ${x+14*s},${my+22*s} Q${x},${my+30*s} ${x-14*s},${my+22*s}Z" fill="#ff7a8a"/>`,
+  cry:`<path d="M${x-16*s},${my+10*s} Q${x-8*s},${my-4*s} ${x},${my+6*s} Q${x+8*s},${my-4*s} ${x+16*s},${my+10*s}" stroke="#fff" stroke-width="${3.6*s}" fill="none" stroke-linecap="round"/>`,
+  fear:`<path d="M${x-14*s},${my+8*s} l${5*s},${-7*s} l${5*s},${7*s} l${5*s},${-7*s} l${5*s},${7*s} l${5*s},${-7*s}" stroke="#fff" stroke-width="${3.2*s}" fill="none" stroke-linejoin="round" stroke-linecap="round"/>`,
+  wink:`<path d="M${x-16*s},${my-2*s} Q${x},${my+6*s} ${x+16*s},${my-2*s}" stroke="#fff" stroke-width="${3.6*s}" fill="none" stroke-linecap="round"/><path d="M${x+4*s},${my+3*s} q${6*s},${14*s} ${14*s},${4*s} q${2*s},${-6*s} ${-2*s},${-8*s}Z" fill="#ff7a8a" stroke="${OL}" stroke-width="${1.6*s}"/>`,
+  disgust:`<path d="M${x-16*s},${my+6*s} q${6*s},${-8*s} ${10*s},0 q${6*s},${8*s} ${10*s},0 q${6*s},${-8*s} ${10*s},0" stroke="#fff" stroke-width="${3.4*s}" fill="none" stroke-linecap="round"/><path d="M${x-4*s},${my+8*s} q${4*s},${16*s} ${12*s},${6*s} q${2*s},${-8*s} ${-2*s},${-8*s}Z" fill="#ff7a8a" stroke="${OL}" stroke-width="${1.6*s}"/>`,
+  evil:`<path d="M${x-24*s},${my-4*s} Q${x},${my+2*s} ${x+24*s},${my-4*s} Q${x+16*s},${my+16*s} ${x},${my+16*s} Q${x-16*s},${my+16*s} ${x-24*s},${my-4*s}Z" fill="#fff"/>${[-12,-4,4,12].map(k=>`<path d="M${x+k*s},${my+1*s} l${2*s},${6*s} l${2*s},${-6*s}" stroke="${OL}" stroke-width="${1.4*s}" fill="none"/>`).join('')}`,
+  worry:`<path d="M${x-12*s},${my+7*s} q${4*s},${-6*s} ${8*s},0 q${4*s},${6*s} ${8*s},-1" stroke="#fff" stroke-width="${3.2*s}" fill="none" stroke-linecap="round"/>`,
+  wow:`<ellipse cx="${x}" cy="${my+5*s}" rx="${10*s}" ry="${14*s}" fill="#fff"/><ellipse cx="${x}" cy="${my+9*s}" rx="${6*s}" ry="${7*s}" fill="#ff8a9a"/>`,
+  sleepy:`<ellipse cx="${x+8*s}" cy="${my+4*s}" rx="${6*s}" ry="${5*s}" fill="#fff" opacity=".9"/>`,
+ };if(o.talk!=null&&o.talk>.08&&m!=='love'&&m!=='joy'){const op=o.talk;out+=`<path d="M${x-15*s},${my-2*s} Q${x},${my-6*s} ${x+15*s},${my-2*s} Q${x+12*s},${my+(4+16*op)*s} ${x},${my+(4+17*op)*s} Q${x-12*s},${my+(4+16*op)*s} ${x-15*s},${my-2*s}Z" fill="#fff"/><path d="M${x-8*s},${my+(2+12*op)*s} Q${x},${my+(-2+10*op)*s} ${x+8*s},${my+(2+12*op)*s} Q${x},${my+(3+15*op)*s} ${x-8*s},${my+(2+12*op)*s}Z" fill="#ff8a9a"/>`;}else if(o.talk!=null&&o.talk>.08&&m==='joy'){const op=o.talk;out+=`<path d="M${x-22*s},${my-4*s} Q${x},${my-2*s} ${x+22*s},${my-4*s} Q${x+16*s},${my+(8+14*op)*s} ${x},${my+(8+14*op)*s} Q${x-16*s},${my+(8+14*op)*s} ${x-22*s},${my-4*s}Z" fill="#fff"/>`;}else out+=MO[mo]||MO[m]||MO.calm;
+ if(o.blink>.5&&m!=='joy'&&m!=='love'&&mo!=='sleepy'&&mo!=='wink'){for(const sx of [-1,1]){const cx=x+sx*ex,es=o.eyeS??1;out+=`<ellipse cx="${cx}" cy="${ey}" rx="${19*s*es}" ry="${24*s*es}" fill="#231d30"/><path d="M${cx-14*s*es},${ey+2*s} Q${cx},${ey+8*s} ${cx+14*s*es},${ey+2*s}" stroke="#fff" stroke-width="${3.6*s}" fill="none" stroke-linecap="round"/>`;}}
+ if(mo==='cry'){for(const sx of [-1,1]){const cx=x+sx*ex;out+=`<path d="M${cx-sx*4*s},${ey+20*s} C${cx+sx*14*s},${ey+34*s} ${cx+sx*10*s},${ey+56*s} ${cx+sx*16*s},${ey+74*s}" stroke="#a8dcff" stroke-width="${9*s}" fill="none" stroke-linecap="round" opacity=".92"/><path d="M${cx-sx*4*s},${ey+20*s} C${cx+sx*14*s},${ey+34*s} ${cx+sx*10*s},${ey+56*s} ${cx+sx*16*s},${ey+74*s}" stroke="#fff" stroke-width="${2.6*s}" fill="none" stroke-linecap="round" opacity=".7"/><circle cx="${cx+sx*16*s}" cy="${ey+78*s}" r="${6*s}" fill="#a8dcff"/>`;}}
+ if(mo==='laugh'){for(const sx of [-1,1])out+=`<path d="M${x+sx*(ex+22)*s},${ey-6*s} q${sx*12*s},${-4*s} ${sx*14*s},${10*s} q${-sx*8*s},${4*s} ${-sx*14*s},${-10*s}Z" fill="#a8dcff" stroke="${OL}" stroke-width="${1.6*s}"/>`;}
+ if(mo==='fear'||mo==='worry')out+=`<path d="M${x-74*s},${y-30*s} q${-9*s},${14*s} 0,${22*s} q${9*s},${-8*s} 0,${-22*s}Z" fill="#a8dcff" stroke="${OL}" stroke-width="${2*s}"/>`;
+ if(mo==='sleepy')out+=`<g font-family="DejaVu Sans" font-weight="bold" fill="#cfe0ff" stroke="${OL}" stroke-width="${1.4*s}"><text x="${x+74*s}" y="${y-44*s}" font-size="${22*s}">Z</text><text x="${x+90*s}" y="${y-70*s}" font-size="${16*s}">z</text></g>`;
+ if(mo==='laugh'||mo==='joy'){out+=`<path d="M${x-62*s},${y+20*s} q${-5*s},${6*s} ${-1*s},${14*s} M${x+62*s},${y+20*s} q${5*s},${6*s} ${1*s},${14*s}" stroke="#8a7aa0" stroke-width="${2.6*s}" fill="none" stroke-linecap="round" opacity=".6"/>`;}
+ if(mo==='tired'||mo==='sleepy')out+=`<path d="M${x-48*s},${ey+26*s} q${18*s},${8*s} ${34*s},0 M${x+14*s},${ey+26*s} q${18*s},${8*s} ${34*s},0" stroke="#6a5a80" stroke-width="${2.4*s}" fill="none" stroke-linecap="round" opacity=".6"/>`;
  if(m==='shock'||m==='sad')out+=`<path d="M${x+72*s},${y-40*s} q${10*s},${16*s} 0,${24*s} q${-10*s},${-8*s} 0,${-24*s}Z" fill="#a8dcff" stroke="${OL}" stroke-width="${2*s}"/>`;
  if(o.hair) out+=o.hair(x,y,s);
  if(o.acc) out+=o.acc(x,y,s);
  return out;
 }
+
 
 // hair pieces (sit on top like caps, glossy)
 const HAIR={
@@ -97,18 +114,47 @@ const HAIR={
   <circle cx="${x+10*s}" cy="${y-124*s}" r="${16*s}" fill="${cL}" stroke="${OL}" stroke-width="${2.4*s}"/>`,
 };
 
-function mitten(x,y,s,rot,col,colL){return `<g transform="translate(${x},${y}) rotate(${rot})">
- <path d="M${-15*s},${-8*s} C${-16*s},${-26*s} ${16*s},${-26*s} ${15*s},${-8*s} L${15*s},${12*s} C${15*s},${24*s} ${-15*s},${24*s} ${-15*s},${12*s}Z" fill="${col}" stroke="${OL}" stroke-width="${2.4*s}"/>
- <path d="M${-15*s},${2*s} C${-28*s},${-2*s} ${-30*s},${-16*s} ${-20*s},${-18*s} C${-14*s},${-18*s} ${-12*s},${-10*s} ${-12*s},${-4*s}" fill="${col}" stroke="${OL}" stroke-width="${2.4*s}"/>
- <ellipse cx="${-4*s}" cy="${-12*s}" rx="${6*s}" ry="${4*s}" fill="${colL}" opacity=".6"/></g>`;}
+// Detailed hand with fingers. origin = wrist, hand points down (+y). pose: relax|fist|open|point|grip|thumb|flat
+function hand(x,y,s,rot,col,colL,pose='relax',side=1){
+ const w=7.6, st=`stroke="${OL}"`;const sk=(d,wd,c)=>`<path d="${d}" stroke="${c}" stroke-width="${wd}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+ const fing=(d)=>sk(d,(w+4.6)*s,OL)+sk(d,w*s,col)+sk(d,w*.28*s,colL).replace('stroke-linecap="round"','stroke-linecap="round" opacity=".55"');
+ const P=(a)=>a.map(v=>v*s).join(',');let back='',front='';
+ const palm=`<path d="M${-12*s},${-3*s} C${-14*s},${-17*s} ${14*s},${-17*s} ${12*s},${-3*s} L${14*s},${13*s} C${14*s},${23*s} ${-14*s},${23*s} ${-14*s},${13*s}Z" fill="${col}" stroke="${OL}" stroke-width="${2.4*s}"/><ellipse cx="${-4*s}" cy="${2*s}" rx="${6*s}" ry="${4*s}" fill="${colL}" opacity=".5"/>`;
+ const fx=[-9.6,-3.2,3.2,9.6];
+ const thumb=(d)=>fing(d);
+ if(pose==='fist'||pose==='grip'){
+  back+=palm;
+  const cur=pose==='fist'?1:.6;
+  // curled fingers = rounded knuckle bumps across the front + finger separation lines
+  const f2=fx.map((px,k)=>`<path d="M${px*s-3.6*s},${14*s} C${px*s-4.4*s},${23*s} ${px*s+4.4*s},${23*s} ${px*s+3.6*s},${14*s}Z" fill="${col}" stroke="${OL}" stroke-width="${2*s}"/>`).join('');
+  front+=f2+`<path d="M${-13*s},${16*s} L${13*s},${16*s}" stroke="${OL}" stroke-width="${1.6*s}" opacity=".5"/>`+fx.slice(0,3).map(px=>`<path d="M${(px+3.2)*s},${13*s} L${(px+3.2)*s},${22*s}" stroke="${OL}" stroke-width="${1.6*s}" opacity=".7"/>`).join('')+fing(`M${-side*10*s},${4*s} Q${-side*14*s},${16*s} ${-side*5*s},${19*s}`);
+ }else if(pose==='point'){
+  back+=palm;
+  front+=`<path d="M${-13*s},${15*s} L${13*s},${15*s}" stroke="${OL}" stroke-width="${1.6*s}" opacity=".5"/>`+[1,2,3].map(k=>`<path d="M${fx[k]*s-3.4*s},${14*s} C${fx[k]*s-4*s},${22*s} ${fx[k]*s+4*s},${22*s} ${fx[k]*s+3.4*s},${14*s}Z" fill="${col}" stroke="${OL}" stroke-width="${2*s}"/>`).join('')+fing(`M${fx[0]*s},${12*s} L${fx[0]*s-.6*s},${34*s}`)+fing(`M${-side*10*s},${4*s} Q${-side*14*s},${12*s} ${-side*7*s},${15*s}`);
+ }else if(pose==='thumb'){
+  back+=palm;
+  front+=fx.map(px=>`<path d="M${px*s-3.6*s},${14*s} C${px*s-4.4*s},${23*s} ${px*s+4.4*s},${23*s} ${px*s+3.6*s},${14*s}Z" fill="${col}" stroke="${OL}" stroke-width="${2*s}"/>`).join('')+fing(`M${-side*10*s},${6*s} Q${-side*17*s},${-4*s} ${-side*14*s},${-14*s}`);
+ }else if(pose==='open'||pose==='flat'){
+  const ang=pose==='open'?[-.34,-.1,.12,.34]:[-.05,0,.03,.07],L=[17,21,20,15];
+  back+=fx.map((px,k)=>fing(`M${px*s},${15*s} Q${(px+ang[k]*14)*s},${(15+L[k]*.55)*s} ${(px+ang[k]*L[k]*1.6)*s},${(15+L[k])*s}`)).join('')+palm;
+  front+=fing(`M${-side*10*s},${6*s} Q${-side*22*s},${12*s} ${-side*22*s},${26*s}`);
+ }else{ // relax: slightly curled, uneven fingers
+  const L=[14,17,16,12],cx=[.5,.2,-.2,-.5];
+  back+=fx.map((px,k)=>fing(`M${px*s},${14*s} Q${(px+cx[k]*3)*s},${(14+L[k]*.6)*s} ${(px+cx[k]*7)*s},${(14+L[k])*s}`)).join('')+palm;
+  front+=fing(`M${-side*10*s},${6*s} Q${-side*16*s},${12*s} ${-side*12*s},${22*s}`)+`<path d="M${-13*s},${14*s} L${13*s},${14*s}" stroke="${OL}" stroke-width="${1.2*s}" opacity=".35"/>`;
+ }
+ // knuckle highlights
+ back+=[-9.6,-3.2,3.2,9.6].map(px=>`<circle cx="${px*s}" cy="${-1*s}" r="${1.4*s}" fill="#fff" opacity=".12"/>`).join('');
+ return {back:`<g transform="translate(${x},${y}) rotate(${rot})">${back}</g>`,front:`<g transform="translate(${x},${y}) rotate(${rot})">${front}</g>`};}
 
 const FIG={boy:{sh:60,wa:56,hip:62,leg:24,arm:24},girl:{sh:50,wa:42,hip:58,leg:20,arm:20,bust:1},chubby:{sh:62,wa:80,hip:72,leg:30,arm:28,belly:1},muscle:{sh:84,wa:56,hip:58,leg:28,arm:32,pecs:1},slim:{sh:52,wa:46,hip:50,leg:19,arm:19}};
 function body(o){ if(o.lie){const {lie,...r}=o;const s=o.s??1;return `<g transform="rotate(${lie>0?-90:90} ${o.x} ${o.y-8*s}) translate(0,${-40*s})">${bodyCore({...r,cast:[0,0]})}</g>`;} return bodyCore(o);}
 function bodyCore(o){ // full character, feet at (X,G)
  const s=o.s??1, X=o.x, G=o.y, c=o.c; let out='';
- const F={...FIG[o.fig||'boy']}; const wf=o.wide??1; F.sh*=wf;F.wa*=wf;F.hip*=wf;
+ const F={...FIG[o.fig||'boy']}; const wf=o.wide??1; F.sh*=wf*(o.fsh??1);F.wa*=wf*(o.fwa??1);F.hip*=wf*(o.fhip??1); const LIMB=o.limb??1; F.leg*=LIMB; F.arm*=LIMB; const ARML=o.armL??1;
  const blur=uid('bl');
  const cs=o.cast??[1.6,.28]; const b2=uid('b2');
+ out+=`<defs><filter id="fabricTex" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="2" seed="9"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 -.32"/></filter></defs>`;
  out+=`<defs><filter id="${blur}"><feGaussianBlur stdDeviation="${5*s}"/></filter><filter id="${b2}"><feGaussianBlur stdDeviation="${9*s}"/></filter></defs>`;
  out+=`<g opacity=".32" filter="url(#${b2})"><path d="M${X-40*s},${G} L${X+40*s},${G} L${X+40*s+330*s*cs[1]*cs[0]},${G-14*s+330*s*cs[1]*.25} L${X+330*s*cs[1]*cs[0]-60*s},${G-14*s+330*s*cs[1]*.25}Z" fill="#3a1e2a"/><ellipse cx="${X+330*s*cs[1]*cs[0]-10*s}" cy="${G-16*s+330*s*cs[1]*.25}" rx="${80*s}" ry="${22*s}" fill="#3a1e2a"/></g>`;
  out+=`<ellipse cx="${X}" cy="${G+2*s}" rx="${62*s}" ry="${9*s}" fill="#1a0e18" opacity=".5" filter="url(#${blur})"/>`;
@@ -127,49 +173,64 @@ function bodyCore(o){ // full character, feet at (X,G)
   const Gi=G-((o.lift||[0,0])[i])*s;
   const lx=X+sx*(F.hip*.4)*s, fx0=X+sx*(F.hip*.42)*s+L[i]*s, lw=F.leg*s, bw2=o.baggy?lw*1.5:lw*.95;
   if(SIT==='chair') out+=`<ellipse cx="${lx}" cy="${hipY+12*s}" rx="${lw*.85}" ry="${lw*.6}" fill="${c.pants}" stroke="${OL}" stroke-width="${2.6*s}"/>`;
-  const LP=`M${lx-lw*.55},${hipY-6*s} L${lx+lw*.55},${hipY-6*s} L${fx0+bw2*.55},${Gi-16*s} L${fx0-bw2*.55},${Gi-16*s}Z`;
+  const TH=o.thigh??1;const LP=`M${lx-lw*.55*TH},${hipY-6*s} L${lx+lw*.55*TH},${hipY-6*s} L${fx0+bw2*.55},${Gi-16*s} L${fx0-bw2*.55},${Gi-16*s}Z`;
   out+=`<path d="${LP}" fill="url(#${lgid})" stroke="${OL}" stroke-width="${2.6*s}" stroke-linejoin="round"/>`;
+  {const kx=lx+(fx0-lx)*.55,ky=hipY+(Gi-16*s-hipY)*.55,w2=(lw*.55*(o.thigh??1)+bw2*.55)/2;
+   out+=`<path d="M${kx-w2*.7},${ky-4*s} q${w2*.5},${6*s} ${w2*1.1},${-2*s} M${kx-w2*.5},${ky+6*s} q${w2*.4},${5*s} ${w2*.9},${-1*s}" stroke="${OL}" stroke-width="${2.2*s}" fill="none" opacity=".55" stroke-linecap="round"/>`;
+   out+=`<path d="M${lx+sx*-lw*.05},${hipY+8*s} L${fx0+sx*-bw2*.05},${Gi-22*s}" stroke="${c.pantsL??'#fff'}" stroke-width="${1.6*s}" opacity=".45"/>`;
+   out+=`<path d="M${fx0-bw2*.55},${Gi-22*s} q${bw2*.55},${5*s} ${bw2*1.1},0" stroke="${c.pantsS??OL}" stroke-width="${2.2*s}" fill="none" opacity=".8"/>`;
+   if(i===0)out+=`<path d="M${lx-lw*.4*(o.thigh??1)},${hipY+10*s} q${lw*.25},${14*s} ${lw*.7},${12*s}" stroke="${c.pantsS??OL}" stroke-width="${1.6*s}" fill="none" opacity=".6"/>`;
+   else out+=`<path d="M${lx+lw*.4*(o.thigh??1)},${hipY+10*s} q${-lw*.25},${14*s} ${-lw*.7},${12*s}" stroke="${c.pantsS??OL}" stroke-width="${1.6*s}" fill="none" opacity=".6"/>`;}
   if(o.baggy) out+=`<path d="M${fx0-bw2*.4},${Gi-40*s} q${bw2*.4},${8*s} ${bw2*.8},0 M${fx0-bw2*.2},${Gi-70*s} q${bw2*.3},${10*s} ${bw2*.6},${-4*s}" stroke="${c.pantsS??OL}" stroke-width="${2.4*s}" fill="none" opacity=".8"/>`;
   out+=`<path d="M${lx+sx*lw*.1},${hipY+20*s} L${fx0+sx*bw2*.1},${Gi-30*s}" stroke="${OL}" stroke-width="${1.6*s}" opacity=".3"/>`;
   const fx=fx0+sx*6*s, fy=Gi-8*s, sw=o.chunky?1.15:1;
   out+=`<g transform="translate(${fx},${fy}) scale(${sw*s})"><path d="M-28,8 C-30,-18 4,-20 18,-10 C30,-4 32,8 22,10Z" fill="${c.shoe}" stroke="${OL}" stroke-width="2.4"/>
    ${c.toe?`<path d="M6,-14 C24,-10 32,0 30,8 L10,8 C12,0 10,-8 6,-14Z" fill="${c.toe}" stroke="${OL}" stroke-width="2"/>`:''}
-   <path d="M-27,4 L27,4" stroke="${c.sole}" stroke-width="5"/><path d="M-20,-12 C-12,-16 -2,-16 6,-12" stroke="#fff" stroke-width="3" opacity=".45" fill="none"/>
+   <path d="M-27,4 L27,4" stroke="${c.sole}" stroke-width="5"/><path d="M-26,-1 L25,-1" stroke="${OL}" stroke-width="1.2" stroke-dasharray="3 3" opacity=".45"/><path d="M-20,-12 C-12,-16 -2,-16 6,-12" stroke="#fff" stroke-width="3" opacity=".45" fill="none"/><path d="M10,-9 C16,-7 22,-2 24,4" stroke="${OL}" stroke-width="1.4" opacity=".35" fill="none"/>
    ${c.lace?`<path d="M-10,-14 l8,6 M-2,-16 l8,6" stroke="${c.lace}" stroke-width="2.4"/>`:''}</g>`;
  }
  }
  // torso
  const sh=hipY-112*s*(o.torsoL??1), tw=F.sh*s, bw=F.hip*s, ww=F.wa*s, wy=sh+(hipY-sh)*.62;
- const T=`M${X-tw},${sh+28*s} C${X-tw},${sh} ${X-tw+26*s},${sh-6*s} ${X},${sh-6*s} C${X+tw-26*s},${sh-6*s} ${X+tw},${sh} ${X+tw},${sh+28*s} C${X+tw},${sh+50*s} ${X+ww},${wy-24*s} ${X+ww},${wy} C${X+ww},${wy+18*s} ${X+bw},${hipY-4*s} ${X+bw},${hipY+8*s} C${X+bw},${hipY+20*s} ${X+bw-12*s},${hipY+22*s} ${X+bw-24*s},${hipY+22*s} L${X-bw+24*s},${hipY+22*s} C${X-bw+12*s},${hipY+22*s} ${X-bw},${hipY+20*s} ${X-bw},${hipY+8*s} C${X-bw},${hipY-4*s} ${X-ww},${wy+18*s} ${X-ww},${wy} C${X-ww},${wy-24*s} ${X-tw},${sh+50*s} ${X-tw},${sh+28*s}Z`;
+ const BU=(o.bust??0)*s; const T=`M${X-tw},${sh+28*s} C${X-tw},${sh} ${X-tw+26*s},${sh-6*s} ${X},${sh-6*s} C${X+tw-26*s},${sh-6*s} ${X+tw},${sh} ${X+tw},${sh+28*s} C${X+tw+BU},${sh+58*s} ${X+ww+BU*.4},${wy-30*s} ${X+ww},${wy} C${X+ww},${wy+18*s} ${X+bw},${hipY-4*s} ${X+bw},${hipY+8*s} C${X+bw},${hipY+20*s} ${X+bw-12*s},${hipY+22*s} ${X+bw-24*s},${hipY+22*s} L${X-bw+24*s},${hipY+22*s} C${X-bw+12*s},${hipY+22*s} ${X-bw},${hipY+20*s} ${X-bw},${hipY+8*s} C${X-bw},${hipY-4*s} ${X-ww},${wy+18*s} ${X-ww},${wy} C${X-ww-BU*.4},${wy-30*s} ${X-tw-BU},${sh+58*s} ${X-tw},${sh+28*s}Z`;
  const tg=uid('tg'), tc=uid('tc');
  out+=`<defs><linearGradient id="${tg}" x1="0" y1="0" x2="1" y2=".3"><stop offset="0" stop-color="${c.topL}"/><stop offset=".5" stop-color="${c.top}"/><stop offset="1" stop-color="${c.topS}"/></linearGradient><clipPath id="${tc}"><path d="${T}"/></clipPath></defs>`;
  // back arm
  const A=o.arms??[[0,0],[0,0]];
- const AW=F.arm*s;const arm=(sx,a)=>{const x0=X+sx*(tw-8*s), y0=sh+24*s, ex=x0+sx*(14+a[0])*s, ey=y0+(52*(o.torsoL??1)+a[1])*s, hx=x0+sx*(10+a[2])*s, hy=y0+(100*(o.torsoL??1)+a[3])*s;
+ const AW=F.arm*s;let RH=null;const arm=(sx,a)=>{const x0=X+sx*(tw-8*s), y0=sh+24*s, ex=x0+sx*(14+a[0])*s, rw8=Math.max(0,Math.min(1,1+a[3]/60)), ey=y0+(52*(o.torsoL??1)*(1+(ARML-1)*rw8)+a[1])*s, hx=x0+sx*(10+a[2])*s, hy=y0+(100*(o.torsoL??1)*(1+(ARML-1)*rw8)+a[3]-(ARML>1?(1-rw8)*(o.handLift??42):0))*s;if(sx===1)RH=[hx,hy+8*s];
   return `<path d="M${x0},${y0} Q${ex},${ey} ${hx},${hy}" stroke="${OL}" stroke-width="${AW+6*s}" fill="none" stroke-linecap="round"/><path d="M${x0},${y0} Q${ex},${ey} ${hx},${hy}" stroke="${c.top}" stroke-width="${AW}" fill="none" stroke-linecap="round"/>
    <path d="M${x0-sx*4*s},${y0+6*s} Q${ex-sx*4*s},${ey} ${hx-sx*3*s},${hy-10*s}" stroke="${sx<0?c.topL:c.topS}" stroke-width="${6*s}" fill="none" stroke-linecap="round" opacity=".7"/>
-   <path d="M${hx-12*s},${hy-8*s} L${hx+12*s},${hy-8*s}" stroke="${c.cuff??c.topS}" stroke-width="${10*s}" stroke-linecap="round"/>
-   ${o.pocket?'':mitten(hx,hy+8*s,s,a[4]??0,o.skinHand??'#231d30','#6a5a80')}${o.prop&&o.prop.side===sx?o.prop.svg(hx,hy+8*s,s):''}`;};
+   <path d="M${ex-sx*AW*.35},${ey-6*s} q${sx*AW*.3},${5*s} ${sx*AW*.6},${2*s} M${ex-sx*AW*.3},${ey+5*s} q${sx*AW*.25},${4*s} ${sx*AW*.5},${1*s}" stroke="${OL}" stroke-width="${2.2*s}" fill="none" opacity=".5" stroke-linecap="round"/>
+   <path d="M${hx-12*s},${hy-8*s} L${hx+12*s},${hy-8*s}" stroke="${c.cuff??c.topS}" stroke-width="${10*s}" stroke-linecap="round"/><path d="M${hx-11*s},${hy-12*s} L${hx+11*s},${hy-12*s}" stroke="${OL}" stroke-width="${1*s}" stroke-dasharray="${2*s} ${2*s}" opacity=".35"/>
+   ${(()=>{if(o.pocket)return '';const hp=(o.hands||[])[sx<0?0:1]||o.handPose||'relax';const hh=hand(hx,hy+8*s,s,a[4]??0,o.skinHand??'#231d30','#6a5a80',hp,sx);return hh.back+(o.prop&&o.prop.side===sx?o.prop.svg(hx,hy+8*s,s):'')+hh.front;})()}`;};
  out+=arm(-1,A[0]);
  const ao=uid('ao');
  out+=`<defs><radialGradient id="${ao}" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#1a0e20" stop-opacity=".55"/><stop offset="1" stop-color="#1a0e20" stop-opacity="0"/></radialGradient></defs>`;
  out+=`<path d="${T}" fill="url(#${tg})"/><g clip-path="url(#${tc})">${o.outfit&&!o.back?o.outfit(X,sh,hipY,s,c):o.back?`<path d="M${X-46*s},${sh-4*s} C${X-40*s},${sh+50*s} ${X+40*s},${sh+50*s} ${X+46*s},${sh-4*s}" fill="${c.topS}" stroke="${OL}" stroke-width="${2.4*s}"/><rect x="${X-90*s}" y="${hipY}" width="${180*s}" height="${30*s}" fill="${c.topS}"/>`:''}
   <path d="M${X+tw*.35},${sh} C${X+tw*.6},${sh+60*s} ${X+bw*.5},${hipY-30*s} ${X+bw*.55},${hipY+30*s} L${X+bw+20*s},${hipY+30*s} L${X+tw+20*s},${sh-10*s}Z" fill="#3a4a9a" opacity=".22"/>
-  <path d="M${X-tw*.6},${sh+70*s} q${10*s},${20*s} ${4*s},${44*s} M${X+tw*.45},${sh+80*s} q${-8*s},${18*s} ${-2*s},${40*s} M${X-20*s},${hipY-6*s} q${16*s},${-8*s} ${34*s},0" stroke="#1a0e20" stroke-width="${2.2*s}" fill="none" opacity=".35" stroke-linecap="round"/>
+  ${o.bust?'':`<path d="M${X-tw*.6},${sh+70*s} q${10*s},${20*s} ${4*s},${44*s} M${X+tw*.45},${sh+80*s} q${-8*s},${18*s} ${-2*s},${40*s} M${X-20*s},${hipY-6*s} q${16*s},${-8*s} ${34*s},0" stroke="#1a0e20" stroke-width="${2.2*s}" fill="none" opacity=".35" stroke-linecap="round"/>`}
   <ellipse cx="${X+(o.lean??0)*s}" cy="${sh+6*s}" rx="${78*s}" ry="${30*s}" fill="url(#${ao})"/>
-  ${F.bust?`<path d="M${X-36*s},${sh+52*s} q${18*s},${16*s} ${34*s},${4*s} M${X+2*s},${sh+56*s} q${18*s},${12*s} ${34*s},${-4*s}" stroke="#1a0e20" stroke-width="${2.4*s}" fill="none" opacity=".35"/>`:''}
+  ${o.bust?`<ellipse cx="${X-24*s}" cy="${sh+58*s}" rx="${26*s}" ry="${20*s}" fill="#fff" opacity=".13"/><ellipse cx="${X+26*s}" cy="${sh+60*s}" rx="${24*s}" ry="${19*s}" fill="#1a0e20" opacity=".12"/><path d="M${X-44*s},${sh+70*s} q${12*s},${8*s} ${26*s},${4*s} M${X+44*s},${sh+70*s} q${-12*s},${8*s} ${-26*s},${4*s}" stroke="#1a0e20" stroke-width="${2.2*s}" fill="none" opacity=".22" stroke-linecap="round"/>`:''}${!o.bust&&F.bust?`<path d="M${X-36*s},${sh+52*s} q${18*s},${16*s} ${34*s},${4*s} M${X+2*s},${sh+56*s} q${18*s},${12*s} ${34*s},${-4*s}" stroke="#1a0e20" stroke-width="${2.4*s}" fill="none" opacity=".35"/>`:''}
   ${F.belly?`<ellipse cx="${X+10*s}" cy="${wy+10*s}" rx="${ww*.8}" ry="${36*s}" fill="#fff" opacity=".1"/><path d="M${X-ww*.7},${wy+30*s} q${ww*.7},${24*s} ${ww*1.4},0" stroke="#1a0e20" stroke-width="${2.4*s}" fill="none" opacity=".35"/>`:''}
   ${F.pecs?`<path d="M${X-46*s},${sh+60*s} q${22*s},${14*s} ${44*s},0 q${22*s},${14*s} ${44*s},0 M${X},${sh+40*s} L${X},${sh+80*s}" stroke="#1a0e20" stroke-width="${2.6*s}" fill="none" opacity=".35"/>`:''}
-  <path d="M${X-tw+10*s},${sh+20*s} C${X-ww},${wy-30*s} ${X-ww+4*s},${wy} ${X-bw+10*s},${hipY}" stroke="#fff" stroke-width="${6*s}" fill="none" opacity=".14" stroke-linecap="round"/></g><path d="${T}" fill="none" stroke="${OL}" stroke-width="${2.8*s}"/>`;
+  <path d="M${X-tw+10*s},${sh+20*s} C${X-ww},${wy-30*s} ${X-ww+4*s},${wy} ${X-bw+10*s},${hipY}" stroke="#fff" stroke-width="${6*s}" fill="none" opacity=".14" stroke-linecap="round"/>
+  ${s>.25?`<rect x="${X-tw-30*s}" y="${sh-10*s}" width="${(tw+30*s)*2}" height="${hipY-sh+40*s}" filter="url(#fabricTex)" opacity=".42"/>`:''}
+  <path d="M${X-tw*.78},${sh+30*s} C${X-ww*.92},${wy-20*s} ${X-ww*.92},${wy+10*s} ${X-bw*.9},${hipY+20*s} M${X+tw*.78},${sh+30*s} C${X+ww*.92},${wy-20*s} ${X+ww*.92},${wy+10*s} ${X+bw*.9},${hipY+20*s}" stroke="#1a0e20" stroke-width="${1.4*s}" fill="none" opacity=".22" stroke-dasharray="${3*s} ${3*s}"/>
+  <path d="M${X-tw*.62},${sh-2*s} Q${X-tw*.8},${sh+12*s} ${X-tw*.82},${sh+30*s} M${X+tw*.62},${sh-2*s} Q${X+tw*.8},${sh+12*s} ${X+tw*.82},${sh+30*s}" stroke="#1a0e20" stroke-width="${1.6*s}" fill="none" opacity=".3"/>
+  <path d="M${X-bw+8*s},${hipY+14*s} L${X+bw-8*s},${hipY+14*s}" stroke="#1a0e20" stroke-width="${1.2*s}" stroke-dasharray="${3*s} ${2.5*s}" opacity=".35"/>
+  <path d="M${X-ww*.5},${wy+4*s} q${ww*.25},${7*s} ${ww*.5},${2*s} M${X+ww*.05},${wy+12*s} q${ww*.22},${6*s} ${ww*.42},0" stroke="#1a0e20" stroke-width="${1.6*s}" fill="none" opacity=".25" stroke-linecap="round"/></g><path d="${T}" fill="none" stroke="${OL}" stroke-width="${2.8*s}"/>`;
  out+=`<path d="M${X+tw-4*s},${sh+24*s} C${X+tw-4*s},${sh+50*s} ${X+ww-4*s},${wy-24*s} ${X+ww-4*s},${wy} C${X+ww-4*s},${wy+18*s} ${X+bw-4*s},${hipY-4*s} ${X+bw-4*s},${hipY+8*s}" stroke="${o.rim??'#ffb27a'}" stroke-width="${4*s}" fill="none" opacity=".8" stroke-linecap="round"/>`;
+ if(o.bag&&!o.back){const sg=1;out+=`<path d="M${X-tw*.8},${sh+2*s} L${X+bw*.85},${hipY+4*s}" stroke="${OL}" stroke-width="${11*s}" fill="none" stroke-linecap="round"/><path d="M${X-tw*.8},${sh+2*s} L${X+bw*.85},${hipY+4*s}" stroke="${o.bag}" stroke-width="${7*s}" fill="none" stroke-linecap="round"/><path d="M${X-tw*.8},${sh+2*s} L${X+bw*.85},${hipY+4*s}" stroke="#fff" stroke-width="${1.2*s}" opacity=".3"/><rect x="${X+bw*.7}" y="${hipY-18*s}" width="${52*s}" height="${44*s}" rx="${8*s}" fill="${o.bag}" stroke="${OL}" stroke-width="${2.4*s}"/><path d="M${X+bw*.7},${hipY-4*s} L${X+bw*.7+52*s},${hipY-4*s}" stroke="${OL}" stroke-width="${1.8*s}"/><circle cx="${X+bw*.7+26*s}" cy="${hipY+2*s}" r="${3.6*s}" fill="#e8c070" stroke="${OL}" stroke-width="${1.2*s}"/>`;}
  if(o.backpack&&!o.back) for(const sx of [-1,1]) out+=`<path d="M${X+sx*tw*.55},${sh-4*s} C${X+sx*tw*.7},${sh+40*s} ${X+sx*tw*.62},${sh+90*s} ${X+sx*tw*.5},${sh+110*s}" stroke="${OL}" stroke-width="${12*s}" fill="none"/><path d="M${X+sx*tw*.55},${sh-4*s} C${X+sx*tw*.7},${sh+40*s} ${X+sx*tw*.62},${sh+90*s} ${X+sx*tw*.5},${sh+110*s}" stroke="${o.backpack}" stroke-width="${8*s}" fill="none"/>`;
  if(o.backpack&&o.back) out+=`<rect x="${X-tw*.62}" y="${sh+14*s}" width="${tw*1.24}" height="${(hipY-sh)*.8}" rx="${18*s}" fill="${o.backpack}" stroke="${OL}" stroke-width="${2.6*s}"/><rect x="${X-tw*.42}" y="${sh+(hipY-sh)*.48}" width="${tw*.84}" height="${(hipY-sh)*.34}" rx="${10*s}" fill="#000" opacity=".15" stroke="${OL}" stroke-width="${2*s}"/><path d="M${X-tw*.5},${sh+30*s} L${X+tw*.5},${sh+30*s}" stroke="#fff" stroke-width="${4*s}" opacity=".25"/>`;
  out+=FLEGS;
  const ra=arm(1,A[1]);
+ if(o.cane&&RH&&!o.sit&&!o.lie&&!o.back){const cx0=RH[0]+6*s,cy0=RH[1]-4*s,cx1=RH[0]+16*s;out+=`<path d="M${cx0-14*s},${cy0+2*s} Q${cx0-12*s},${cy0-12*s} ${cx0},${cy0-10*s} L${cx1},${G-2*s}" stroke="${OL}" stroke-width="${9*s}" fill="none" stroke-linecap="round"/><path d="M${cx0-14*s},${cy0+2*s} Q${cx0-12*s},${cy0-12*s} ${cx0},${cy0-10*s} L${cx1},${G-2*s}" stroke="#7a4e2e" stroke-width="${5*s}" fill="none" stroke-linecap="round"/><path d="M${cx0+2*s},${cy0} L${cx1-2*s},${G-20*s}" stroke="#b07a4e" stroke-width="${1.6*s}" opacity=".7"/>`;}
  if(!o.armsOver) out+=ra;
  const NK=(o.neck??0)*s;
  if(NK) out+=`<path d="M${X-14*s},${sh+4*s} L${X-13*s},${sh-NK-10*s} L${X+13*s},${sh-NK-10*s} L${X+14*s},${sh+4*s}Z" fill="#2a2238" stroke="${OL}" stroke-width="${2.4*s}"/><path d="M${X+4*s},${sh-NK} L${X+6*s},${sh}" stroke="#4a3a5a" stroke-width="${3*s}"/>`;
- out+=head(X+(o.lean??0)*s,sh-NK-62*s*(o.headS??1),{...o.h,s:s*(o.headS??1),rim:o.rim,back:o.back});
+ {const TILT={smug:4,sad:-5,shy:-7,love:6,tired:5,cry:-6,worry:-4,evil:3,wink:6,disgust:-3,laugh:-3,sleepy:9,fear:-2,joy:2};const tl=(o.headTilt??TILT[o.h&&o.h.mood]??0)+(o.headBob??0);const hxx=X+(o.lean??0)*s,hyy=sh-NK-62*s*(o.headS??1)+(o.stoop??0)*s;
+  out+=`<g transform="rotate(${tl.toFixed(2)} ${hxx.toFixed(1)} ${(hyy+60*s*(o.headS??1)).toFixed(1)})">`+head(hxx,hyy,{wrinkles:o.wrinkles,...o.h,s:s*(o.headS??1),rim:o.rim,back:o.back})+`</g>`;}
  if(o.armsOver) out+=(o.armsOver==='both'?arm(-1,A[0]):'')+ra;
  return out;
 }
@@ -355,5 +416,111 @@ HAIR.bun2=(c,cL,cS)=>(x,y,s)=>{const P=(d)=>d.replace(/(-?\d+\.?\d*),(-?\d+\.?\d
  // clip
  o+=`<g transform="translate(${x-56*s},${y-62*s}) rotate(-28)"><rect x="${-18*s}" y="${-7*s}" width="${36*s}" height="${14*s}" rx="${5*s}" fill="#e3232c" stroke="${OL}" stroke-width="${2.4*s}"/><rect x="${-9*s}" y="${-2*s}" width="${18*s}" height="${4*s}" rx="${2*s}" fill="#ff8a8a"/></g>`;
  return o;};
-const AGE={y18:{s:1.08,headS:.7,legL:1.55,torsoL:1.18,neck:16},kid:{s:.82,headS:1.05,legL:.85,wide:.95},teen:{s:1,headS:.92,legL:1.12,wide:1},adult:{s:1.08,headS:.84,legL:1.32,wide:1.08},elder:{s:1.02,headS:.86,legL:1.18,wide:1.12}};
-module.exports={head,body,HAIR,OUT,ACC,AGE,OL,rnd};
+// Adult proportions (competitor-like): ~4.5 heads tall, long thin legs, hands at mid-thigh, visible neck.
+// Total height ≈ 8 + 120*legL + 112*torsoL + neck + 136*headS units; 470 units at s=1.08 -> 1.75 m.
+const clamp01=v=>Math.max(0,Math.min(1,v));
+function ageBody(age=30,fig='boy'){
+ if(age<=12) return {...AGE_KID};
+ if(age<18) return {...AGE_TEEN};
+ const fem=fig==='girl', mid=clamp01((age-30)/30), old=clamp01((age-60)/30), young=clamp01((25-age)/7);
+ const b={headS:.72+.02*young+.02*old, legL:1.6-.08*old, torsoL:1.24, neck:12-6*old,
+  wide:1, limb:(fem?.9:.9)-.04*old, armL:1.06, lean:old?3+9*old:0, stoop:old?4+10*old:0, wrinkles:age<40?0:age<55?.3:age<65?.55:.9, thigh:fem?1.5:1.35};
+ if(fem){b.fsh=.98;b.fwa=.9+.14*mid+.12*old;b.fhip=1.22+.04*mid;b.bust=9-2*old;}
+ else if(fig==='chubby'){b.fsh=1.02;b.fwa=1+.08*mid;b.fhip=.92;}
+ else if(fig==='muscle'){b.fsh=1.04;b.fwa=.98;b.fhip=.9;}
+ else if(fig==='slim'){b.fsh=1.08;b.fwa=1+.08*mid;b.fhip=.9;}
+ else {b.fsh=1.12;b.fwa=.98+.14*mid+.06*old;b.fhip=.86+.06*mid;}
+ const units=8+120*b.legL+112*b.torsoL+b.neck+136*b.headS, metres=1.75*(fem?.95:1)*(1-.06*old);
+ b.s=1.08*470/units*metres/1.75; return b;}
+const AGE_KID={s:.82,headS:1.05,legL:.85,wide:.95}, AGE_TEEN={s:1,headS:.92,legL:1.12,wide:1};
+const AGE={kid:AGE_KID,teen:AGE_TEEN,y18:ageBody(18,'boy'),adult:ageBody(32,'boy'),elder:ageBody(75,'boy'),at:ageBody};
+
+// ================= v3.1: more outfits, hairstyles, accessories =================
+const _sh=(h,k)=>{const n=parseInt(h.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;const f=v=>Math.max(0,Math.min(255,Math.round(k>0?v+(255-v)*k:v*(1+k))));return '#'+[f(r),f(g),f(b)].map(v=>v.toString(16).padStart(2,'0')).join('');};
+const stitch=(d,s,c='#e8c070')=>`<path d="${d}" stroke="${c}" stroke-width="${1.6*s}" stroke-dasharray="${4*s} ${3*s}" fill="none" opacity=".85"/>`;
+const btn=(x,y,s,c='#f2eee6')=>`<circle cx="${x}" cy="${y}" r="${3.8*s}" fill="${c}" stroke="${OL}" stroke-width="${1.4*s}"/><circle cx="${x-1*s}" cy="${y-1*s}" r="${.8*s}" fill="${OL}"/><circle cx="${x+1*s}" cy="${y+1*s}" r="${.8*s}" fill="${OL}"/>`;
+Object.assign(OUT,{
+ shirt:(X,sh,hip,s,c)=>`<path d="M${X-24*s},${sh-6*s} L${X-6*s},${sh+22*s} L${X-34*s},${sh+8*s}Z M${X+24*s},${sh-6*s} L${X+6*s},${sh+22*s} L${X+34*s},${sh+8*s}Z" fill="${c.shirt}" stroke="${OL}" stroke-width="${2*s}" stroke-linejoin="round"/>
+  <path d="M${X},${sh+20*s} L${X},${hip+20*s}" stroke="${OL}" stroke-width="${2*s}" opacity=".6"/>${[0,1,2,3,4].map(i=>btn(X,sh+36*s+i*(hip-sh-30*s)/4.4,s)).join('')}
+  <rect x="${X+16*s}" y="${sh+44*s}" width="${28*s}" height="${26*s}" rx="${3*s}" fill="${c.topL}" stroke="${OL}" stroke-width="${1.8*s}"/>${stitch(`M${X+19*s},${sh+49*s} L${X+41*s},${sh+49*s}`,s,c.shirt)}
+  <path d="M${X-40*s},${hip-16*s} Q${X},${hip-8*s} ${X+40*s},${hip-16*s}" stroke="${OL}" stroke-width="${1.6*s}" fill="none" opacity=".4"/>`,
+ sweater:(X,sh,hip,s,c)=>`<ellipse cx="${X}" cy="${sh+2*s}" rx="${34*s}" ry="${12*s}" fill="${c.topL}" stroke="${OL}" stroke-width="${2.4*s}"/>${[...Array(9)].map((_,i)=>`<path d="M${X-28*s+i*7*s},${sh-6*s} l0,${14*s}" stroke="${c.topS}" stroke-width="${1.6*s}" opacity=".6"/>`).join('')}
+  ${[0,1,2,3].map(i=>`<path d="M${X-8*s},${sh+34*s+i*30*s} l${8*s},${-12*s} l${8*s},${12*s} l${-8*s},${12*s}Z" fill="none" stroke="${c.topS}" stroke-width="${2.2*s}" opacity=".7"/><path d="M${X-40*s},${sh+34*s+i*30*s} q${8*s},${-8*s} ${16*s},0 M${X+24*s},${sh+34*s+i*30*s} q${8*s},${-8*s} ${16*s},0" stroke="${c.topS}" stroke-width="${2*s}" fill="none" opacity=".5"/>`).join('')}
+  <rect x="${X-52*s}" y="${hip-6*s}" width="${104*s}" height="${22*s}" rx="${6*s}" fill="${c.topL}" stroke="${OL}" stroke-width="${2*s}"/>${[...Array(12)].map((_,i)=>`<path d="M${X-46*s+i*8.4*s},${hip-4*s} l0,${18*s}" stroke="${c.topS}" stroke-width="${1.4*s}" opacity=".6"/>`).join('')}`,
+ turtleneck:(X,sh,hip,s,c)=>`<path d="M${X-30*s},${sh-26*s} L${X+30*s},${sh-26*s} L${X+34*s},${sh+8*s} Q${X},${sh+20*s} ${X-34*s},${sh+8*s}Z" fill="${c.topL}" stroke="${OL}" stroke-width="${2.4*s}"/>${[0,1,2].map(i=>`<path d="M${X-32*s},${sh-14*s+i*9*s} q${32*s},${8*s} ${64*s},0" stroke="${c.topS}" stroke-width="${1.6*s}" fill="none" opacity=".6"/>`).join('')}
+  <path d="M${X-40*s},${hip-6*s} Q${X},${hip+6*s} ${X+40*s},${hip-6*s}" stroke="${c.topS}" stroke-width="${2.4*s}" fill="none" opacity=".5"/>`,
+ coat:(X,sh,hip,s,c)=>`<path d="M${X-24*s},${sh-6*s} L${X-52*s},${sh+34*s} L${X-8*s},${sh+92*s} L${X},${sh+40*s}Z M${X+24*s},${sh-6*s} L${X+52*s},${sh+34*s} L${X+8*s},${sh+92*s} L${X},${sh+40*s}Z" fill="${c.topS}" stroke="${OL}" stroke-width="${2.4*s}" stroke-linejoin="round"/>
+  <path d="M${X},${sh+40*s} L${X},${hip+30*s}" stroke="${OL}" stroke-width="${2.2*s}"/>${[0,1,2].map(i=>btn(X-10*s,sh+98*s+i*26*s,s,c.acc)+btn(X+10*s,sh+98*s+i*26*s,s,c.acc)).join('')}
+  <rect x="${X-56*s}" y="${(sh+hip)/2+14*s}" width="${112*s}" height="${10*s}" fill="${c.topS}" stroke="${OL}" stroke-width="${1.8*s}"/><rect x="${X-9*s}" y="${(sh+hip)/2+11*s}" width="${18*s}" height="${16*s}" rx="${2*s}" fill="none" stroke="#e8c070" stroke-width="${2.2*s}"/>
+  ${[-1,1].map(sx=>`<path d="M${X+sx*18*s},${hip-30*s} l${sx*28*s},${4*s} l${-sx*1*s},${18*s} l${-sx*28*s},${-4*s}Z" fill="${c.topL}" stroke="${OL}" stroke-width="${1.8*s}"/>`).join('')}`,
+ denim:(X,sh,hip,s,c)=>`<path d="M${X-24*s},${sh-6*s} L${X-6*s},${sh+20*s} L${X-34*s},${sh+6*s}Z M${X+24*s},${sh-6*s} L${X+6*s},${sh+20*s} L${X+34*s},${sh+6*s}Z" fill="${c.topL}" stroke="${OL}" stroke-width="${2*s}" stroke-linejoin="round"/>
+  <path d="M${X},${sh+18*s} L${X},${hip+20*s}" stroke="${OL}" stroke-width="${2*s}"/>${stitch(`M${X-5*s},${sh+20*s} L${X-5*s},${hip+16*s} M${X+5*s},${sh+20*s} L${X+5*s},${hip+16*s}`,s)}
+  ${[-1,1].map(sx=>`<g><path d="M${X+sx*14*s},${sh+40*s} l${sx*32*s},0 l0,${28*s} l${-sx*16*s},${8*s} l${-sx*16*s},${-8*s}Z" fill="${c.topL}" stroke="${OL}" stroke-width="${1.8*s}"/>${btn(X+sx*30*s,sh+56*s,s,'#c8ccd4')}${stitch(`M${X+sx*17*s},${sh+43*s} l${sx*26*s},0`,s)}</g>`).join('')}
+  ${[0,1,2].map(i=>btn(X,sh+40*s+i*30*s,s,'#c8ccd4')).join('')}${stitch(`M${X-48*s},${hip+2*s} Q${X},${hip+12*s} ${X+48*s},${hip+2*s}`,s)}`,
+ jersey:(X,sh,hip,s,c)=>`<path d="M${X-26*s},${sh-6*s} Q${X},${sh+36*s} ${X+26*s},${sh-6*s}" fill="${c.shirt}" stroke="${OL}" stroke-width="${2.4*s}"/>
+  <path d="M${X-58*s},${sh+14*s} L${X-52*s},${hip+10*s} M${X+58*s},${sh+14*s} L${X+52*s},${hip+10*s}" stroke="${c.shirt}" stroke-width="${7*s}" opacity=".9"/>
+  <text x="${X}" y="${sh+100*s}" text-anchor="middle" font-family="DejaVu Sans" font-weight="bold" font-size="${62*s}" fill="${c.shirt}" stroke="${OL}" stroke-width="${2.4*s}" paint-order="stroke">${c.num??'10'}</text>
+  <path d="M${X-50*s},${hip-2*s} Q${X},${hip+8*s} ${X+50*s},${hip-2*s}" stroke="${c.shirt}" stroke-width="${6*s}" fill="none"/>`,
+ raincoat:(X,sh,hip,s,c)=>`<path d="M${X-44*s},${sh-14*s} Q${X},${sh-36*s} ${X+44*s},${sh-14*s} Q${X+34*s},${sh+22*s} ${X},${sh+26*s} Q${X-34*s},${sh+22*s} ${X-44*s},${sh-14*s}Z" fill="${c.topS}" stroke="${OL}" stroke-width="${2.4*s}"/>
+  <path d="M${X},${sh+24*s} L${X},${hip+28*s}" stroke="${OL}" stroke-width="${3*s}"/>${[0,1,2,3,4].map(i=>`<circle cx="${X-12*s}" cy="${sh+46*s+i*24*s}" r="${3.4*s}" fill="#e8e4dc" stroke="${OL}" stroke-width="${1.4*s}"/><circle cx="${X+12*s}" cy="${sh+46*s+i*24*s}" r="${3.4*s}" fill="#e8e4dc" stroke="${OL}" stroke-width="${1.4*s}"/>`).join('')}
+  <path d="M${X-58*s},${sh+70*s} L${X+58*s},${sh+70*s} M${X-58*s},${sh+80*s} L${X+58*s},${sh+80*s}" stroke="#e8f4a0" stroke-width="${4*s}" opacity=".9"/>
+  <path d="M${X+6*s},${sh+24*s} l${6*s},${12*s}" stroke="#c8ccd4" stroke-width="${3.4*s}" stroke-linecap="round"/>`,
+ tracksuit:(X,sh,hip,s,c)=>`<path d="M${X-22*s},${sh-14*s} L${X-24*s},${sh+6*s} Q${X},${sh+16*s} ${X+24*s},${sh+6*s} L${X+22*s},${sh-14*s}" fill="${c.topL}" stroke="${OL}" stroke-width="${2.4*s}"/><path d="M${X},${sh+14*s} L${X},${hip+20*s}" stroke="${OL}" stroke-width="${2.2*s}"/><rect x="${X-3*s}" y="${sh+14*s}" width="${6*s}" height="${9*s}" fill="#c8ccd4" stroke="${OL}" stroke-width="1.2"/>
+  <path d="M${X-58*s},${sh+10*s} L${X-52*s},${hip+8*s} M${X+58*s},${sh+10*s} L${X+52*s},${hip+8*s}" stroke="${c.shirt}" stroke-width="${6*s}"/><path d="M${X-50*s},${sh+10*s} L${X-45*s},${hip+8*s} M${X+50*s},${sh+10*s} L${X+45*s},${hip+8*s}" stroke="${c.shirt}" stroke-width="${3*s}"/>
+  <text x="${X+28*s}" y="${sh+48*s}" text-anchor="middle" font-family="DejaVu Sans" font-weight="bold" font-size="${15*s}" fill="${c.shirt}">IYA</text><path d="M${X-50*s},${hip-4*s} Q${X},${hip+6*s} ${X+50*s},${hip-4*s}" stroke="${c.topS}" stroke-width="${5*s}" fill="none"/>`,
+ hawaiian:(X,sh,hip,s,c)=>`<path d="M${X-26*s},${sh-6*s} L${X-8*s},${sh+24*s} L${X-38*s},${sh+10*s}Z M${X+26*s},${sh-6*s} L${X+8*s},${sh+24*s} L${X+38*s},${sh+10*s}Z" fill="${c.shirt}" stroke="${OL}" stroke-width="${2*s}" stroke-linejoin="round"/>
+  ${[[-30,50],[24,44],[-12,86],[34,92],[-36,120],[8,128],[-22,150],[32,150]].map(([a,b],i)=>`<g transform="translate(${X+a*s},${sh+b*s})">${[0,1,2,3,4].map(k=>`<ellipse cx="0" cy="${-6*s}" rx="${3.6*s}" ry="${6*s}" fill="${['#ff6f91','#ffd24a','#fff','#ff8a3a'][i%4]}" transform="rotate(${k*72})"/>`).join('')}<circle r="${2.2*s}" fill="#ffd24a"/></g>`).join('')}
+  <path d="M${X},${sh+22*s} L${X},${hip+20*s}" stroke="${OL}" stroke-width="${1.8*s}" opacity=".5"/>`,
+ striped:(X,sh,hip,s,c)=>`${[...Array(9)].map((_,i)=>`<path d="M${X-90*s},${sh+12*s+i*20*s} Q${X},${sh+20*s+i*20*s} ${X+90*s},${sh+12*s+i*20*s}" stroke="${c.acc}" stroke-width="${8*s}" fill="none"/>`).join('')}<path d="M${X-34*s},${sh-4*s} Q${X},${sh+22*s} ${X+34*s},${sh-4*s}" fill="none" stroke="${OL}" stroke-width="${2.4*s}"/>`,
+ cardigan:(X,sh,hip,s,c)=>`<rect x="${X-62*s}" y="${sh+8*s}" width="${124*s}" height="${hip-sh+30*s}" fill="${c.shirt}"/><path d="M${X-26*s},${sh-6*s} L${X-8*s},${sh+26*s} L${X-8*s},${hip+30*s} L${X-62*s},${hip+30*s} L${X-62*s},${sh+8*s}Z M${X+26*s},${sh-6*s} L${X+8*s},${sh+26*s} L${X+8*s},${hip+30*s} L${X+62*s},${hip+30*s} L${X+62*s},${sh+8*s}Z" fill="${c.topL}" stroke="${OL}" stroke-width="${2.2*s}" stroke-linejoin="round"/>
+  ${[0,1,2,3].map(i=>btn(X-12*s,sh+44*s+i*28*s,s,c.acc)).join('')}${[-1,1].map(sx=>`<rect x="${X+sx*36*s-14*s}" y="${hip-40*s}" width="${28*s}" height="${30*s}" rx="${4*s}" fill="${c.topL}" stroke="${OL}" stroke-width="${1.8*s}"/>`).join('')}`,
+ scrubs:(X,sh,hip,s,c)=>`<path d="M${X-24*s},${sh-6*s} L${X},${sh+44*s} L${X+24*s},${sh-6*s}" fill="${c.acc}" stroke="${OL}" stroke-width="${2.4*s}" stroke-linejoin="round"/><path d="M${X-18*s},${sh-2*s} L${X},${sh+34*s} L${X+18*s},${sh-2*s}" fill="none" stroke="${c.topL}" stroke-width="${3*s}"/>
+  <rect x="${X+14*s}" y="${sh+56*s}" width="${30*s}" height="${26*s}" rx="${3*s}" fill="${c.topL}" stroke="${OL}" stroke-width="${1.8*s}"/><path d="M${X+22*s},${sh+60*s} L${X+22*s},${sh+80*s}" stroke="#e5262d" stroke-width="${2*s}"/>
+  <rect x="${X-40*s}" y="${hip-34*s}" width="${28*s}" height="${22*s}" rx="${3*s}" fill="${c.topL}" stroke="${OL}" stroke-width="${1.8*s}"/>`,
+});
+// ---- more hairstyles ----
+Object.assign(HAIR,{
+ curly:(c,cL)=>(x,y,s)=>{let o='';const pts=[];for(let i=0;i<13;i++){const a=Math.PI+i*Math.PI/12;pts.push([x+Math.cos(a)*74*s,y-12*s+Math.sin(a)*86*s]);}
+  for(const [px,py] of pts)o+=`<circle cx="${px}" cy="${py}" r="${22*s}" fill="${c}" stroke="${OL}" stroke-width="${2.4*s}"/>`;
+  for(const [px,py] of pts)o+=`<circle cx="${px}" cy="${py}" r="${22*s}" fill="${c}"/>`;
+  for(let i=0;i<8;i++){const a=Math.PI+(i+.5)*Math.PI/8;o+=`<circle cx="${x+Math.cos(a)*54*s}" cy="${y-20*s+Math.sin(a)*70*s}" r="${20*s}" fill="${c}" stroke="${OL}" stroke-width="${2*s}"/>`;}
+  for(const [px,py] of pts.filter((_,i)=>i%2===0))o+=`<path d="M${px-8*s},${py-6*s} q${8*s},${-8*s} ${14*s},${2*s}" stroke="${cL}" stroke-width="${3*s}" fill="none" stroke-linecap="round" opacity=".8"/>`;return o;},
+ mohawk:(c,cL)=>(x,y,s)=>`<path d="M${x-82*s},${y-16*s} C${x-84*s},${y-70*s} ${x-30*s},${y-90*s} ${x},${y-90*s} C${x+30*s},${y-90*s} ${x+84*s},${y-70*s} ${x+82*s},${y-16*s} C${x+60*s},${y-52*s} ${x+30*s},${y-62*s} ${x},${y-60*s} C${x-30*s},${y-62*s} ${x-60*s},${y-52*s} ${x-82*s},${y-16*s}Z" fill="${c}" opacity=".3"/>
+  <path d="M${x-30*s},${y-64*s} L${x-38*s},${y-100*s} L${x-26*s},${y-96*s} L${x-30*s},${y-128*s} L${x-16*s},${y-112*s} L${x-14*s},${y-146*s} L${x-2*s},${y-118*s} L${x+8*s},${y-154*s} L${x+16*s},${y-118*s} L${x+30*s},${y-148*s} L${x+30*s},${y-110*s} L${x+42*s},${y-124*s} L${x+38*s},${y-96*s} L${x+46*s},${y-92*s} L${x+32*s},${y-62*s} Q${x},${y-74*s} ${x-30*s},${y-64*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}" stroke-linejoin="round"/>
+  <path d="M${x-18*s},${y-72*s} L${x-14*s},${y-132*s} M${x+6*s},${y-74*s} L${x+8*s},${y-142*s} M${x+26*s},${y-72*s} L${x+28*s},${y-126*s}" stroke="${cL}" stroke-width="${3*s}" opacity=".8"/>`,
+ bob:(c,cL)=>(x,y,s)=>`<path d="M${x-86*s},${y+34*s} C${x-100*s},${y-70*s} ${x-30*s},${y-104*s} ${x},${y-104*s} C${x+30*s},${y-104*s} ${x+100*s},${y-70*s} ${x+86*s},${y+34*s} L${x+66*s},${y+34*s} C${x+68*s},${y-8*s} ${x+60*s},${y-44*s} ${x+30*s},${y-56*s} C${x+10*s},${y-44*s} ${x-30*s},${y-44*s} ${x-44*s},${y-52*s} C${x-62*s},${y-40*s} ${x-68*s},${y-8*s} ${x-66*s},${y+34*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}" stroke-linejoin="round"/>
+  <path d="M${x-60*s},${y-34*s} Q${x-10*s},${y-70*s} ${x+30*s},${y-44*s}" stroke="${OL}" stroke-width="${2*s}" fill="none" opacity=".4"/><path d="M${x-60*s},${y-84*s} C${x-20*s},${y-104*s} ${x+30*s},${y-102*s} ${x+60*s},${y-80*s}" stroke="${cL}" stroke-width="${4*s}" fill="none" stroke-linecap="round" opacity=".8"/>`,
+ quiff:(c,cL)=>(x,y,s)=>`<path d="M${x-80*s},${y-16*s} C${x-92*s},${y-70*s} ${x-60*s},${y-96*s} ${x-14*s},${y-118*s} C${x+30*s},${y-146*s} ${x+90*s},${y-118*s} ${x+84*s},${y-60*s} C${x+84*s},${y-40*s} ${x+80*s},${y-26*s} ${x+78*s},${y-14*s} C${x+66*s},${y-44*s} ${x+40*s},${y-56*s} ${x+8*s},${y-52*s} C${x-30*s},${y-52*s} ${x-60*s},${y-44*s} ${x-80*s},${y-16*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}" stroke-linejoin="round"/>
+  <path d="M${x-40*s},${y-88*s} C${x},${y-130*s} ${x+50*s},${y-124*s} ${x+66*s},${y-84*s}" stroke="${cL}" stroke-width="${4*s}" fill="none" stroke-linecap="round" opacity=".85"/><path d="M${x-10*s},${y-100*s} C${x+10*s},${y-122*s} ${x+34*s},${y-118*s} ${x+44*s},${y-100*s}" stroke="${OL}" stroke-width="${1.6*s}" fill="none" opacity=".4"/>`,
+ manbun:(c,cL)=>(x,y,s)=>`<circle cx="${x}" cy="${y-110*s}" r="${28*s}" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/><path d="M${x-14*s},${y-120*s} q${14*s},${-10*s} ${28*s},${2*s}" stroke="${cL}" stroke-width="${3*s}" fill="none" stroke-linecap="round"/><rect x="${x-14*s}" y="${y-90*s}" width="${28*s}" height="${8*s}" rx="${3*s}" fill="#e5262d" stroke="${OL}" stroke-width="${1.8*s}"/>
+  <path d="M${x-80*s},${y-16*s} C${x-84*s},${y-80*s} ${x-30*s},${y-98*s} ${x},${y-98*s} C${x+30*s},${y-98*s} ${x+84*s},${y-80*s} ${x+80*s},${y-16*s} C${x+64*s},${y-48*s} ${x+30*s},${y-58*s} ${x},${y-56*s} C${x-30*s},${y-58*s} ${x-64*s},${y-48*s} ${x-80*s},${y-16*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/><path d="M${x-44*s},${y-80*s} C${x-10*s},${y-94*s} ${x+30*s},${y-92*s} ${x+54*s},${y-74*s}" stroke="${cL}" stroke-width="${3.6*s}" fill="none" opacity=".8"/>`,
+ dreads:(c,cL)=>(x,y,s)=>{let o='';for(let i=0;i<9;i++){const a=Math.PI+i*Math.PI/8,px=x+Math.cos(a)*82*s,py=y-6*s+Math.sin(a)*86*s,len=(i<2||i>6)?70:34;o+=`<path d="M${px},${py} q${Math.cos(a)*14*s},${len*.5*s} ${Math.cos(a)*8*s},${len*s}" stroke="${OL}" stroke-width="${17*s}" fill="none" stroke-linecap="round"/><path d="M${px},${py} q${Math.cos(a)*14*s},${len*.5*s} ${Math.cos(a)*8*s},${len*s}" stroke="${c}" stroke-width="${13*s}" fill="none" stroke-linecap="round"/><path d="M${px-3*s},${py+4*s} l${2*s},${len*.7*s}" stroke="${cL}" stroke-width="${2*s}" opacity=".7"/>`;}
+  return o+`<path d="M${x-80*s},${y-16*s} C${x-84*s},${y-84*s} ${x-30*s},${y-102*s} ${x},${y-102*s} C${x+30*s},${y-102*s} ${x+84*s},${y-84*s} ${x+80*s},${y-16*s} C${x+60*s},${y-54*s} ${x+30*s},${y-62*s} ${x},${y-60*s} C${x-30*s},${y-62*s} ${x-60*s},${y-54*s} ${x-80*s},${y-16*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/>`;},
+ pixie:(c,cL)=>(x,y,s)=>`<path d="M${x-78*s},${y-12*s} C${x-88*s},${y-76*s} ${x-30*s},${y-96*s} ${x+10*s},${y-94*s} C${x+64*s},${y-92*s} ${x+90*s},${y-60*s} ${x+78*s},${y-12*s} C${x+68*s},${y-36*s} ${x+44*s},${y-46*s} ${x+16*s},${y-40*s} C${x-4*s},${y-52*s} ${x-30*s},${y-56*s} ${x-52*s},${y-46*s} C${x-64*s},${y-40*s} ${x-72*s},${y-28*s} ${x-78*s},${y-12*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}" stroke-linejoin="round"/>
+  <path d="M${x-30*s},${y-80*s} C${x},${y-94*s} ${x+40*s},${y-90*s} ${x+60*s},${y-70*s}" stroke="${cL}" stroke-width="${4*s}" fill="none" stroke-linecap="round" opacity=".8"/>`,
+ balding:(c,cL)=>(x,y,s)=>[-1,1].map(sx=>`<path d="M${x+sx*80*s},${y-28*s} C${x+sx*88*s},${y-52*s} ${x+sx*70*s},${y-62*s} ${x+sx*58*s},${y-58*s} C${x+sx*66*s},${y-44*s} ${x+sx*68*s},${y-30*s} ${x+sx*66*s},${y-12*s} L${x+sx*80*s},${y-6*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.4*s}" stroke-linejoin="round"/>`).join('')+`<path d="M${x-30*s},${y-84*s} q${12*s},${-14*s} ${26*s},${-6*s} M${x+8*s},${y-88*s} q${12*s},${-10*s} ${24*s},${0*s}" stroke="${c}" stroke-width="${4*s}" fill="none" stroke-linecap="round" opacity=".8"/>`,
+ bandana:(c,cL)=>(x,y,s)=>`<path d="M${x-82*s},${y-18*s} C${x-90*s},${y-84*s} ${x-30*s},${y-104*s} ${x},${y-104*s} C${x+30*s},${y-104*s} ${x+90*s},${y-84*s} ${x+82*s},${y-18*s} Q${x},${y-40*s} ${x-82*s},${y-18*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/>${[...Array(7)].map((_,i)=>`<circle cx="${x-52*s+i*17*s}" cy="${y-70*s-Math.sin(i/6*Math.PI)*16*s}" r="${3.4*s}" fill="${cL}"/>`).join('')}
+  <path d="M${x+76*s},${y-26*s} l${22*s},${-6*s} l${-6*s},${22*s}Z M${x+76*s},${y-26*s} l${26*s},${14*s} l${-12*s},${6*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.2*s}"/>`,
+ fedora:(c,cL)=>(x,y,s)=>`<ellipse cx="${x}" cy="${y-52*s}" rx="${118*s}" ry="${22*s}" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/><path d="M${x-62*s},${y-56*s} C${x-66*s},${y-118*s} ${x-30*s},${y-130*s} ${x},${y-126*s} C${x+30*s},${y-130*s} ${x+66*s},${y-118*s} ${x+62*s},${y-56*s} Q${x},${y-40*s} ${x-62*s},${y-56*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/>
+  <path d="M${x-62*s},${y-62*s} Q${x},${y-46*s} ${x+62*s},${y-62*s} L${x+62*s},${y-74*s} Q${x},${y-58*s} ${x-62*s},${y-74*s}Z" fill="${cL}" stroke="${OL}" stroke-width="${2*s}"/><path d="M${x-14*s},${y-124*s} Q${x},${y-108*s} ${x+14*s},${y-124*s}" stroke="${OL}" stroke-width="${2*s}" fill="none" opacity=".5"/>`,
+ beret:(c,cL)=>(x,y,s)=>`<path d="M${x-84*s},${y-30*s} C${x-110*s},${y-90*s} ${x-30*s},${y-120*s} ${x+30*s},${y-110*s} C${x+96*s},${y-104*s} ${x+96*s},${y-50*s} ${x+82*s},${y-26*s} Q${x},${y-48*s} ${x-84*s},${y-30*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/><path d="M${x+8*s},${y-112*s} l${4*s},${-12*s} l${8*s},${4*s}" stroke="${OL}" stroke-width="${3*s}" fill="none"/><path d="M${x-50*s},${y-84*s} q${40*s},${-30*s} ${100*s},${-10*s}" stroke="${cL}" stroke-width="${4*s}" fill="none" opacity=".7"/>`,
+ tophat:(c,cL)=>(x,y,s)=>`<ellipse cx="${x}" cy="${y-56*s}" rx="${100*s}" ry="${18*s}" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/><path d="M${x-58*s},${y-58*s} L${x-52*s},${y-160*s} Q${x},${y-172*s} ${x+52*s},${y-160*s} L${x+58*s},${y-58*s} Q${x},${y-44*s} ${x-58*s},${y-58*s}Z" fill="${c}" stroke="${OL}" stroke-width="${2.6*s}"/><path d="M${x-58*s},${y-70*s} Q${x},${y-56*s} ${x+58*s},${y-70*s} L${x+57*s},${y-86*s} Q${x},${y-72*s} ${x-57*s},${y-86*s}Z" fill="#e5262d" stroke="${OL}" stroke-width="${2*s}"/><path d="M${x-40*s},${y-150*s} L${x-44*s},${y-92*s}" stroke="${cL}" stroke-width="${4*s}" opacity=".5"/>`,
+});
+// ---- more accessories ----
+Object.assign(ACC,{
+ beard:(x,y,s)=>`<path d="M${x-78*s},${y+8*s} C${x-80*s},${y+70*s} ${x-40*s},${y+104*s} ${x},${y+104*s} C${x+40*s},${y+104*s} ${x+80*s},${y+70*s} ${x+78*s},${y+8*s} C${x+68*s},${y+32*s} ${x+46*s},${y+38*s} ${x+24*s},${y+34*s} C${x+10*s},${y+24*s} ${x-10*s},${y+24*s} ${x-24*s},${y+34*s} C${x-46*s},${y+38*s} ${x-68*s},${y+32*s} ${x-78*s},${y+8*s}Z M${x-34*s},${y+34*s} Q${x-34*s},${y+58*s} ${x},${y+58*s} Q${x+34*s},${y+58*s} ${x+34*s},${y+34*s} Q${x},${y+22*s} ${x-34*s},${y+34*s}Z" fill-rule="evenodd" fill="#3a2418" stroke="${OL}" stroke-width="${2.4*s}" stroke-linejoin="round"/><path d="M${x-34*s},${y+34*s} Q${x},${y+22*s} ${x+34*s},${y+34*s}" stroke="#5a3a28" stroke-width="${4*s}" fill="none" stroke-linecap="round"/><path d="M${x-50*s},${y+60*s} q${10*s},${14*s} ${22*s},${16*s} M${x+10*s},${y+80*s} q${12*s},${6*s} ${24*s},${-4*s}" stroke="#5a3a28" stroke-width="${3*s}" fill="none" stroke-linecap="round" opacity=".8"/>`,
+ goatee:(x,y,s)=>`<path d="M${x-26*s},${y+44*s} C${x-30*s},${y+76*s} ${x-10*s},${y+90*s} ${x},${y+90*s} C${x+10*s},${y+90*s} ${x+30*s},${y+76*s} ${x+26*s},${y+44*s} C${x+14*s},${y+52*s} ${x-14*s},${y+52*s} ${x-26*s},${y+44*s}Z" fill="#3a2418" stroke="${OL}" stroke-width="${2.2*s}"/>`,
+ stubble:(x,y,s)=>{let o='';for(let i=0;i<46;i++){const a=.2+i*.058*Math.PI*.72,r=(.7+((i*37)%10)/40)*76;o+=`<circle cx="${x+Math.cos(a+Math.PI*.04)*r*s*.98*(i%2?1:-1)}" cy="${y+8*s+Math.sin(a)*r*.72*s}" r="${1.5*s}" fill="#b8a898" opacity=".55"/>`;}return o;},
+ sunglasses:(x,y,s)=>`<path d="M${x-62*s},${y-6*s} L${x+62*s},${y-6*s}" stroke="#111" stroke-width="${5*s}"/><path d="M${x-58*s},${y-18*s} L${x-8*s},${y-18*s} L${x-14*s},${y+18*s} Q${x-30*s},${y+26*s} ${x-46*s},${y+18*s}Z M${x+58*s},${y-18*s} L${x+8*s},${y-18*s} L${x+14*s},${y+18*s} Q${x+30*s},${y+26*s} ${x+46*s},${y+18*s}Z" fill="#111" stroke="#2a2030" stroke-width="${2.6*s}"/><path d="M${x-50*s},${y-12*s} l${14*s},${0}" stroke="#fff" stroke-width="${3*s}" opacity=".5"/><path d="M${x+16*s},${y-12*s} l${14*s},${0}" stroke="#fff" stroke-width="${3*s}" opacity=".5"/>`,
+ scarf:(x,y,s)=>`<path d="M${x-62*s},${y+58*s} C${x-30*s},${y+80*s} ${x+30*s},${y+80*s} ${x+62*s},${y+58*s} L${x+66*s},${y+90*s} C${x+30*s},${y+112*s} ${x-30*s},${y+112*s} ${x-66*s},${y+90*s}Z" fill="#e5262d" stroke="${OL}" stroke-width="${2.6*s}"/>${[0,1,2,3,4,5].map(i=>`<path d="M${x-54*s+i*21*s},${y+66*s} l${-2*s},${34*s}" stroke="#f6f2ec" stroke-width="${4*s}" opacity=".85"/>`).join('')}<path d="M${x+30*s},${y+96*s} l${12*s},${52*s} l${26*s},${-6*s} l${-6*s},${-52*s}Z" fill="#e5262d" stroke="${OL}" stroke-width="${2.4*s}"/>${[0,1].map(i=>`<path d="M${x+34*s+i*0},${y+112*s+i*18*s} l${28*s},${-6*s}" stroke="#f6f2ec" stroke-width="${4*s}" opacity=".85"/>`).join('')}`,
+ earrings:(x,y,s)=>[-1,1].map(sx=>`<circle cx="${x+sx*86*s}" cy="${y+34*s}" r="${6*s}" fill="#ffd24a" stroke="${OL}" stroke-width="${1.8*s}"/><path d="M${x+sx*86*s},${y+40*s} l0,${12*s}" stroke="#ffd24a" stroke-width="${2.4*s}"/><circle cx="${x+sx*86*s}" cy="${y+56*s}" r="${5*s}" fill="#ff5fae" stroke="${OL}" stroke-width="${1.6*s}"/>`).join(''),
+ freckles:(x,y,s)=>[-1,1].map(sx=>[[-26,24],[-36,30],[-20,34],[-42,20],[-30,40]].map(([a,b])=>`<circle cx="${x+sx*(-a)*s}" cy="${y+b*s}" r="${2*s}" fill="#d8a888" opacity=".8"/>`).join('')).join(''),
+ scar:(x,y,s)=>`<path d="M${x+34*s},${y-34*s} L${x+52*s},${y+14*s}" stroke="#e8d0d0" stroke-width="${3.4*s}" stroke-linecap="round"/>${[0,1,2].map(i=>`<path d="M${x+(38+i*6)*s},${y+(-26+i*14)*s} l${8*s},${-3*s}" stroke="#e8d0d0" stroke-width="${2*s}"/>`).join('')}`,
+ bandaid:(x,y,s)=>`<g transform="translate(${x-52*s},${y+34*s}) rotate(-28)"><rect x="${-18*s}" y="${-7*s}" width="${36*s}" height="${14*s}" rx="${5*s}" fill="#f2c8a8" stroke="${OL}" stroke-width="${1.6*s}"/><rect x="${-6*s}" y="${-7*s}" width="${12*s}" height="${14*s}" fill="#f6e4d0"/><circle cx="${-1*s}" cy="${-2*s}" r="${1*s}" fill="#d8a888"/><circle cx="${2*s}" cy="${2*s}" r="${1*s}" fill="#d8a888"/></g>`,
+ mask:(x,y,s)=>`<path d="M${x-62*s},${y+8*s} C${x-60*s},${y+4*s} ${x+60*s},${y+4*s} ${x+62*s},${y+8*s} L${x+58*s},${y+54*s} C${x+30*s},${y+74*s} ${x-30*s},${y+74*s} ${x-58*s},${y+54*s}Z" fill="#cfe8f4" stroke="${OL}" stroke-width="${2.4*s}"/>${[0,1,2].map(i=>`<path d="M${x-58*s},${y+22*s+i*12*s} Q${x},${y+30*s+i*12*s} ${x+58*s},${y+22*s+i*12*s}" stroke="#8ab0c4" stroke-width="${1.6*s}" fill="none"/>`).join('')}<path d="M${x-62*s},${y+10*s} L${x-84*s},${y+2*s} M${x+62*s},${y+10*s} L${x+84*s},${y+2*s}" stroke="#cfe8f4" stroke-width="${3*s}"/>`,
+ eyepatch:(x,y,s)=>`<path d="M${x-80*s},${y-44*s} L${x+34*s},${y+30*s}" stroke="#111" stroke-width="${4*s}"/><ellipse cx="${x-30*s}" cy="${y-4*s}" rx="${26*s}" ry="${28*s}" fill="#15131c" stroke="#000" stroke-width="${2.4*s}"/>`,
+ monocle:(x,y,s)=>`<circle cx="${x+30*s}" cy="${y-4*s}" r="${28*s}" fill="#cfe8f4" fill-opacity=".25" stroke="#d8b050" stroke-width="${4*s}"/><path d="M${x+52*s},${y+18*s} q${10*s},${40*s} ${-4*s},${86*s}" stroke="#d8b050" stroke-width="${2*s}" fill="none"/>`,
+ headband:(x,y,s)=>`<path d="M${x-82*s},${y-34*s} Q${x},${y-62*s} ${x+82*s},${y-34*s} L${x+82*s},${y-18*s} Q${x},${y-46*s} ${x-82*s},${y-18*s}Z" fill="#ff5fae" stroke="${OL}" stroke-width="${2.4*s}"/><path d="M${x-40*s},${y-48*s} l${6*s},${14*s} M${x+4*s},${y-52*s} l${6*s},${14*s} M${x+46*s},${y-46*s} l${6*s},${14*s}" stroke="#fff" stroke-width="${3*s}" opacity=".8"/>`,
+});
+
+module.exports={head,body,HAIR,OUT,ACC,AGE,ageBody,OL,rnd,hand};

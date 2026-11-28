@@ -21,11 +21,19 @@ jobs:
       frames: ${{ steps.m.outputs.frames }}
     steps:
       - uses: actions/checkout@v4
-        with: {fetch-depth: 2}
+        with: {fetch-depth: 0}
       - id: p
+        env:
+          IN_PROJECT: ${{ github.event.inputs.project }}
+          BEFORE: ${{ github.event.before }}
         run: |
-          if [ -n "${{ github.event.inputs.project }}" ]; then P="${{ github.event.inputs.project }}";
-          else P=$(git diff --name-only HEAD~1 HEAD | grep -E '^projects/[^/]+/render.request$' | head -1 | cut -d/ -f2); fi
+          if [ -n "$IN_PROJECT" ]; then P="$IN_PROJECT";
+          else
+            # all commits of this push, not only the last one
+            if [ -n "$BEFORE" ] && git cat-file -e "$BEFORE" 2>/dev/null; then R="$BEFORE..HEAD"; else R="HEAD~1..HEAD"; fi
+            P=$(git diff --name-only $R | grep -E '^projects/[^/]+/render.request$' | head -1 | cut -d/ -f2)
+          fi
+          if ! printf '%s' "$P" | grep -Eq '^[A-Za-z0-9_-]+$'; then echo "bad or empty project name: '$P'"; exit 1; fi
           echo "project=$P" >> $GITHUB_OUTPUT; echo "project=$P"
       - uses: actions/setup-node@v4
         with: {node-version: 20}
@@ -41,13 +49,13 @@ jobs:
     needs: plan
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: 20}
-      - run: for i in 1 2 3; do sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-dejavu-core >/dev/null && break; sleep 5; done
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-dejavu-core >/dev/null
       - run: cd engine && npm install --no-audit --no-fund && npx playwright install --with-deps chromium >/dev/null
       - run: cd engine && node render.js ../projects/${{ needs.plan.outputs.project }} --from ${{ matrix.from }} --to ${{ matrix.to }}
       - run: |
@@ -64,7 +72,7 @@ jobs:
         with: {node-version: 20}
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
-      - run: for i in 1 2 3; do sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null && break; sleep 5; done; pip install -q numpy
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null && pip install -q numpy
       - run: cd engine && npm install --no-audit --no-fund
       - uses: actions/download-artifact@v4
         with: {pattern: 'chunk-*', merge-multiple: true, path: chunks}
