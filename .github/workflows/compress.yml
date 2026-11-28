@@ -34,7 +34,7 @@ jobs:
           if gh run download $RUN -n final-$P -D dl 2>/dev/null; then echo "using final artifact"; else
             echo "no final artifact: concatenating chunks"
             gh run download $RUN -p 'chunk-*' -D chunks
-            mkdir -p dl; ls chunks/*/chunk_*.mp4 chunks/chunk_*.mp4 2>/dev/null | sort | sed "s|^|file '$PWD/|;s|$|'|" > list.txt
+            mkdir -p dl; ls chunks/*/chunk_*.mp4 chunks/chunk_*.mp4 2>/dev/null | awk -F/ '{print $NF" "$0}' | sort | cut -d' ' -f2- | sed "s|^|file '$PWD/|;s|$|'|" > list.txt; cat list.txt | head -3; wc -l list.txt
             ffmpeg -v error -y -f concat -safe 0 -i list.txt -c copy dl/$P.mp4
           fi
           ls -la dl
