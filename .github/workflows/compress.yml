@@ -27,9 +27,17 @@ jobs:
         run: |
           P=${{ steps.r.outputs.project }}
           cd engine && node render.js ../projects/$P --events && python mix.py ../projects/$P
-      - name: download final artifact (video)
+      - name: get the video (final artifact, or assemble it from the chunks)
         env: {GH_TOKEN: '${{ github.token }}'}
-        run: gh run download ${{ steps.r.outputs.run }} -n final-${{ steps.r.outputs.project }} -D dl
+        run: |
+          P=${{ steps.r.outputs.project }}; RUN=${{ steps.r.outputs.run }}
+          if gh run download $RUN -n final-$P -D dl 2>/dev/null; then echo "using final artifact"; else
+            echo "no final artifact: concatenating chunks"
+            gh run download $RUN -p 'chunk-*' -D chunks
+            mkdir -p dl; ls chunks/*/chunk_*.mp4 chunks/chunk_*.mp4 2>/dev/null | sort | sed "s|^|file '$PWD/|;s|$|'|" > list.txt
+            ffmpeg -v error -y -f concat -safe 0 -i list.txt -c copy dl/$P.mp4
+          fi
+          ls -la dl
       - name: two-pass encode to <90 MB with the new audio
         run: |
           P=${{ steps.r.outputs.project }}; IN=dl/$P.mp4; A=projects/$P/build/mix.wav
